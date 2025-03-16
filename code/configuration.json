@@ -1,0 +1,8 @@
+{
+    "stringValue": "hello",
+    "intValue": 123,
+    "floatValue": 3.14,
+    "anotherString": "world",
+    "anotherInt": -5,
+    "anotherFloat": 2.718
+  }

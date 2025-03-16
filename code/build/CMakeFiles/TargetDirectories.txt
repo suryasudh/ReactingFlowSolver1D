@@ -1,0 +1,4 @@
+D:/actual files in this 2/to_sort/computational_physics/frojekt/dummyTheMummy/code/build/CMakeFiles/json_parser.dir
+D:/actual files in this 2/to_sort/computational_physics/frojekt/dummyTheMummy/code/build/CMakeFiles/main001.dir
+D:/actual files in this 2/to_sort/computational_physics/frojekt/dummyTheMummy/code/build/CMakeFiles/edit_cache.dir
+D:/actual files in this 2/to_sort/computational_physics/frojekt/dummyTheMummy/code/build/CMakeFiles/rebuild_cache.dir
