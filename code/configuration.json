@@ -1,8 +1,8 @@
 {
-    "stringValue": "hello",
-    "intValue": 123,
-    "floatValue": 3.14,
+    "data_folder01": "../data/cantera_files/",
+    "run_num": 1,
     "anotherString": "world",
-    "anotherInt": -5,
+    "float_precision": 64,
+    "floatValue": 3.14,
     "anotherFloat": 2.718
   }
