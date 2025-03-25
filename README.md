@@ -2,6 +2,14 @@
 dummy The Mummy is a simple and innocent mummy who became dummy
 
 
+Change of plans
+---------------
+Now running only on Ubuntu (linux based systems) <br>
+Mainly because of the limitation of c++ cantera library <br>
+which is more suited for linux environments.
+
+--------
+
 Keep the code files and CMakeLists.txt file in the code folder. <br>
 Create a build directory in the code folder. <br>
 Move into the folder. <br>
