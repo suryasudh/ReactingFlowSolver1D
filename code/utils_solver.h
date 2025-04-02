@@ -11,6 +11,51 @@
 #include <iomanip>
 #include <unordered_map>
 
+template <int Precision>
+struct PrecisionToType;
+
+template <>
+struct PrecisionToType<32> {
+    using Type = float;
+};
+
+template <>
+struct PrecisionToType<64> {
+    using Type = double;
+};
+
+template <>
+struct PrecisionToType<128> {
+    using Type = long double;
+};
+
+
+
+/**
+ * @brief Creates an array initialized with a specified value (type converted to T)
+ * @tparam T Type of array elements
+ * @tparam U Type of initialization value (automatically deduced)
+ * @param size Number of elements in the array
+ * @param value Initialization value (will be static_cast to T)
+ * @return T* Newly allocated array
+ */
+template <typename T, typename U>
+T* create_initialized_array(int size, U value) {
+    if(size <= 0) {
+        throw std::invalid_argument("Array size must be positive");
+    }
+    
+    T* arr = new T[size];
+    T cast_value = static_cast<T>(value);
+    
+    for(int i = 0; i < size; ++i) {
+        arr[i] = cast_value;
+    }
+    
+    return arr;
+}
+
+
 // Structure to hold the parsed JSON data.
 // You can modify this structure based on the keys you expect in your JSON file.
 struct JsonData {

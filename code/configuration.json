@@ -2,7 +2,8 @@
     "data_folder01": "../data/cantera_files/",
     "run_num": 1,
     "anotherString": "world",
-    "float_precision": 64,
+    "float_precision": 32,
     "floatValue": 3.14,
-    "anotherFloat": 2.718
-  }
+    "anotherFloat": 2.718,
+    "domain_size": 50
+}
