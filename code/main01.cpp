@@ -63,6 +63,7 @@ JsonData json_reader(const std::string& filename) {
 template <int Precision>
 void runSolver(JsonData config) {
     const int domain_size = config.integerValues["domain_size"];
+    const int boundary_mode = config.integerValues["boundary_mode"];
 
     using Real = typename PrecisionToType<Precision>::Type;
 
@@ -91,18 +92,10 @@ void runSolver(JsonData config) {
     Real* input = create_initialized_array<Real, Real>(domain_size, 1.0);
 
     // Compute derivatives
-    Real* derivatives = central_diff_first_derivative(input, domain_size, dx);
+    Real* derivatives = central_diff_first_derivative(input, domain_size, dx, boundary_mode);
 
-    // Use the derivatives...
-    for(int i = 0; i < domain_size; ++i) {
-        std::cout << "Value at index " << i << ": " << input[i] << '\n';
-    }
-
-
-    // Use the derivatives...
-    for(int i = 0; i < domain_size; ++i) {
-        std::cout << "Derivative at index " << i << ": " << derivatives[i] << '\n';
-    }
+    print_array(input, domain_size);
+    print_array(derivatives, domain_size);
 
     // Cleanup memory
     delete[] derivatives;

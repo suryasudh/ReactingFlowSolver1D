@@ -56,6 +56,30 @@ T* create_initialized_array(int size, U value) {
 }
 
 
+// 1. For raw pointers + size
+template <typename T>
+void print_array(const T* arr, size_t size) {
+    std::cout << "[ ";
+    bool first = true;
+    for(size_t i = 0; i < size; ++i) {
+        std::cout << (first ? "" : ", ") << arr[i];
+        first = false;
+    }
+    std::cout << " ]\n";
+}
+
+template <typename Container>
+void print_array(const Container& cont) {
+    std::cout << "[ ";
+    bool first = true;
+    for(const auto& elem : cont) {
+        std::cout << (first ? "" : ", ") << elem;
+        first = false;
+    }
+    std::cout << " ]\n";
+}
+
+
 // Structure to hold the parsed JSON data.
 // You can modify this structure based on the keys you expect in your JSON file.
 struct JsonData {
@@ -67,7 +91,6 @@ struct JsonData {
 // Function to read and parse a JSON file using standard library functions.
 // Takes the filename as input and populates the JsonData structure.
 bool readAndParseJson(const std::string& filename, JsonData& data);
-
 
 void file_writer(std::vector<double> time, std::vector<std::vector<double>> vec1, std::string fileName);
 

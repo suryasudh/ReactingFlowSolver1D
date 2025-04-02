@@ -211,7 +211,7 @@ T bds2_second_derivative(T dx, T f_il3, T f_il2, T f_il1, T f_i0){
  * @return T* Newly allocated array containing derivatives (caller must manage memory)
  */
 template <typename T>
-T* central_diff_first_derivative(const T* arr, int n, T dx) {
+T* central_diff_first_derivative(const T* arr, int n, T dx, int mode) {
     static_assert(std::is_floating_point<T>::value,
                  "Template parameter T must be a floating-point type");
 
@@ -220,10 +220,12 @@ T* central_diff_first_derivative(const T* arr, int n, T dx) {
 
     T* deriv = new T[n];  // Allocate new array
 
-    for(int i = 0; i < n; ++i) {
-        const int right = (i + 1) % n;
-        const int left = (i - 1 + n) % n;  // Handle negative indices
-        deriv[i] = (arr[right] - arr[left]) / (T(2) * dx);
+    if (mode == 1) {
+        for(int i = 0; i < n; ++i) {
+            const int right = (i + 1) % n;
+            const int left = (i - 1 + n) % n;  // Handle negative indices
+            deriv[i] = (arr[right] - arr[left]) / (T(2) * dx);
+        }
     }
 
     return deriv;
