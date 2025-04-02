@@ -112,11 +112,6 @@ void runSolver(JsonData config) {
 
 
 int main() {
-    JsonData config;
-    std::string filename = "configuration.json"; // Replace with your JSON filename
-
-    config = json_reader(filename);
-
     try {
         simple_demo();
     } catch (CanteraError& err) {
@@ -124,6 +119,14 @@ int main() {
         return 1;
     }
 
+
+
+
+
+    JsonData config;
+    std::string filename = "configuration.json"; // Replace with your JSON filename
+
+    config = json_reader(filename);
 
     int precision = config.integerValues["float_precision"];
 
@@ -137,13 +140,6 @@ int main() {
         std::cout << "Error: Unsupported float precision: " << precision << std::endl;
         return 1;
     }
-
-
-
-
-
-    
-
 
 
     return 0;
