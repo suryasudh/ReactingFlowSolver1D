@@ -131,3 +131,80 @@ bool readAndParseJson(const std::string& filename, JsonData& data) {
 
     return true;
 }
+
+
+
+
+
+
+
+/********************************************************************************************** */
+
+// Writes the output to a file (preferably .csv file)
+// 
+// Parameters
+// ----------
+// time
+// vec1
+// fileName (send a filename with .csv)
+//
+// Returns
+// -------
+// none -> just saves the outout into the given filename as comma separated values
+void file_writer(std::vector<double> time, std::vector<std::vector<double>> vec1, std::string fileName){
+    std::ofstream output_file(fileName);
+    
+    if (output_file.is_open()) {
+        output_file << "time" << "," << "analytic" << "," << "euler" << "," << "AB2" << "," << "RK2" << "\n";
+        for (int i = 0; i < time.size(); i++){
+            output_file <<        std::fixed << std::setprecision(15) << time[i]
+                        << "," << std::fixed << std::setprecision(15) << vec1[0][i]
+                        << "," << std::fixed << std::setprecision(15) << vec1[1][i]
+                        << "," << std::fixed << std::setprecision(15) << vec1[2][i]
+                        << "," << std::fixed << std::setprecision(15) << vec1[3][i]
+                        << "\n";
+        }
+        output_file.close();
+        std::cout << "File written successfully.\n";
+    } else {
+        std::cerr << "Error opening file for writing.\n";
+    }
+}
+
+
+void file_writer2(std::vector<double> x, std::vector<std::vector<double>> vec1, std::string fileName){
+    std::ofstream output_file(fileName);
+    
+    if (output_file.is_open()) {
+        output_file << "x" << "," << "euler_ext" << "," << "euler_imp" << "," << "euler_exp" << "\n";
+        for (int i = 0; i < x.size(); i++){
+            output_file <<        std::fixed << std::setprecision(15) << x[i] 
+                        << "," << std::fixed << std::setprecision(15) << vec1[0][i]
+                        << "," << std::fixed << std::setprecision(15) << vec1[1][i]
+                        << "," << std::fixed << std::setprecision(15) << vec1[2][i]
+                        << "\n";
+        }
+        output_file.close();
+        std::cout << "File written successfully.\n";
+    } else {
+        std::cerr << "Error opening file for writing.\n";
+    }
+}
+
+void file_writer3(std::string filename_op, std::vector<double> t, std::vector<std::array<double, 2>> x){
+    std::ofstream output_file(filename_op);
+            
+    if (output_file.is_open()) {
+        output_file << "time" << "," << "x" << "," << "z" << "\n";
+        for (int i = 0; i < t.size(); i++){
+            output_file <<        std::fixed << std::setprecision(15) << t[i]
+                        << "," << std::fixed << std::setprecision(15) << x[i][0]
+                        << "," << std::fixed << std::setprecision(15) << x[i][1]
+                        << "\n";
+        }
+        output_file.close();
+        std::cout << "File written successfully.\n";
+    } else {
+        std::cerr << "Error opening file for writing.\n";
+    }
+}
