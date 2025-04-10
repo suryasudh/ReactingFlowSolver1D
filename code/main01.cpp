@@ -3,137 +3,89 @@
 #include "utils_solver.h"
 #include "derivatives.h"
 #include "schemes.h"
+#include "FluidSolver1D.h"
 #include <iostream>
 
 using namespace Cantera;
 
-// The actual code is put into a function that can be called from the main program.
-void simple_demo()
-{
-    // Create a new Solution object
-    auto sol = newSolution("h2o2.yaml");
-    auto gas = sol->thermo();
 
-    // Set the thermodynamic state by specifying T (500 K) P (2 atm) and the mole
-    // fractions. Note that the mole fractions do not need to sum to 1.0 - they will
-    // be normalized internally. Also, the values for any unspecified species will be
-    // set to zero.
-    gas->setState_TPX(500.0, 2.0*OneAtm, "H2O:1.0, H2:8.0, AR:1.0");
+template <typename T>
+std::shared_ptr<Cantera::ThermoPhase> gas_h2o2_creator(T temp, T pressure, std::string mole_fractions){
+    
+    std::shared_ptr<Cantera::Solution> sol = newSolution("h2o2.yaml");
+    std::shared_ptr<Cantera::ThermoPhase> gas_h2o2 = sol->thermo();
 
-    // Print a summary report of the state of the gas.
-    std::cout << gas->report() << std::endl;
+    gas_h2o2->setState_TPX(temp, pressure, mole_fractions);
+
+    return gas_h2o2;
 }
+
 
 
 JsonData json_reader(const std::string& filename) {
     JsonData config;
     if (readAndParseJson(filename, config)) {
         std::cout << "configuration.json file parsed successfully!" << std::endl;
-
-        // Access the parsed values:
-        if (config.stringValues.count("data_folder01")) {
-            std::cout << "Path to cantera files: " << config.stringValues["data_folder01"] << std::endl;
-        }
-
-        if (config.integerValues.count("run_num")) {
-            std::cout << "Run number chosen: " << config.integerValues["run_num"] << std::endl;
-        }
-
-        if (config.integerValues.count("float_precision")) {
-            std::cout << "Precision chosen for the run: " << config.integerValues["float_precision"] << std::endl;
-        }
-
-        if (config.stringValues.count("anotherString")) {
-            std::cout << "Another String Value: " << config.stringValues["anotherString"] << std::endl;
-        }
-
-        if (config.floatValues.count("floatValue")) {
-            std::cout << "Float Value: " << config.floatValues["floatValue"] << std::endl;
-        }
-
-        // Access other values similarly based on your JSON structure.
     } else {
         std::cerr << "Failed to parse JSON file." << std::endl;
     }
-
     return config;
 }
 
 
+
 template <int Precision>
-void runSolver(JsonData config) {
-    const int domain_size = config.integerValues["domain_size"];
-    const int boundary_mode = config.integerValues["boundary_mode"];
-
+void FluidSolver1DFunc(JsonData config) {
     using Real = typename PrecisionToType<Precision>::Type;
+    
+    const std::string data_folder01 = config.stringValues["data_folder01"];
+    const int run_num = config.integerValues["run_num"];
+    const int float_precision = config.integerValues["float_precision"];
+    const int boundary_mode = config.integerValues["boundary_mode"];
+    const double init_temp = config.floatValues["init_temp"];
+    const double init_pressure = config.floatValues["init_pres"];
+    const int Nx = config.integerValues["Nx"];
+    const double domain_length = config.floatValues["domain_length"];
+    const double timestep = 5e-9; //static_cast<double>(config.floatValues["timestep"]);
+    const int n_iters_total = config.integerValues["n_iters_total"];
+    const int n_iters_save = config.integerValues["n_iters_save"];
+    const std::string scheme_to_use = config.stringValues["scheme_to_use"];
 
-    std::cout << "--- Using " << (Precision == 32 ? "float" : (Precision == 64 ? "double" : "long double")) << " (Second Derivatives) ---" << std::endl;
-    Real dx = static_cast<Real>(0.1);
-    Real x0 = static_cast<Real>(1.0);
-    Real f_il3 = std::sin(x0 - 3 * dx);
-    Real f_il2 = std::sin(x0 - 2 * dx);
-    Real f_il1 = std::sin(x0 - dx);
-    Real f_i0 = std::sin(x0);
-    Real f_ir1 = std::sin(x0 + dx);
-    Real f_ir2 = std::sin(x0 + 2 * dx);
-    Real f_ir3 = std::sin(x0 + 3 * dx);
+    Real T0 = static_cast<Real>(init_temp);
+    Real P0 = static_cast<Real>(init_pressure);
 
-    std::cout << "Exact second derivative of sin(x) at x=" << x0 << " is -sin(" << x0 << ") = " << -std::sin(x0) << std::endl;
-    std::cout << "FDS1 (O(h)): " << fds1_second_derivative(dx, f_i0, f_ir1, f_ir2) << std::endl;
-    std::cout << "BDS1 (O(h)): " << bds1_second_derivative(dx, f_il2, f_il1, f_i0) << std::endl;
-    std::cout << "CDS2 (O(h^2)): " << cds2_second_derivative(dx, f_il1, f_i0, f_ir1) << std::endl;
-    std::cout << "FDS2 (O(h^2)): " << fds2_second_derivative(dx, f_i0, f_ir1, f_ir2, f_ir3) << std::endl;
-    std::cout << "BDS2 (O(h^2)): " << bds2_second_derivative(dx, f_il3, f_il2, f_il1, f_i0) << std::endl;
-    std::cout << std::endl;
+    std::shared_ptr<Cantera::ThermoPhase> gas_h2o2 = gas_h2o2_creator(T0, P0, air_gas_comp);
 
+    FluidSolver1D solver = FluidSolver1D<Real>(gas_h2o2, T0, P0, 
+        fuel_gas_comp, static_cast<Real>(domain_length), Nx, static_cast<Real>(timestep),
+        scheme_to_use);
+    
+    std::vector<Real> rho_new;
+    std::vector<Real> rho_u_new;
+    std::vector<Real> rho_e0_new;
+    std::vector<std::vector<Real>> rho_ys_new;
 
-    //-------------------------------------------------------------------------
-    // Raw pointer version
-    Real* input = create_initialized_array<Real, Real>(domain_size, 1.0);
+    int case1 = 1;
 
-    // Compute derivatives
-    Real* derivatives = central_diff_first_derivative(input, domain_size, dx, boundary_mode);
-
-    print_array(input, domain_size);
-    print_array(derivatives, domain_size);
-
-    // Cleanup memory
-    delete[] derivatives;
-    //-------------------------------------------------------------------------
+    std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new) = solver.get_initial_vals(case1);
+    
+    std::cout << "so far, so good" << std::endl;
 }
 
 
-
 int main() {
-    try {
-        simple_demo();
-    } catch (CanteraError& err) {
-        std::cout << err.what() << std::endl;
-        return 1;
-    }
-
-
-
-
-
     JsonData config;
     std::string filename = "configuration.json"; // Replace with your JSON filename
 
     config = json_reader(filename);
-
     int precision = config.integerValues["float_precision"];
 
-    if (precision == 32) {
-        runSolver<32>(config);
-    } else if (precision == 64) {
-        runSolver<64>(config);
-    } else if (precision == 128) {
-        runSolver<128>(config);
-    } else {
-        std::cout << "Error: Unsupported float precision: " << precision << std::endl;
+    try{
+        FluidSolver1DFunc<64>(config);
+    } catch (CanteraError& err) {
+        std::cout << err.what() << std::endl;
         return 1;
     }
-
 
     return 0;
 }

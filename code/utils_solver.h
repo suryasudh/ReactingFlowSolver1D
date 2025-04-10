@@ -8,6 +8,8 @@
 #include <sstream>
 #include <vector>
 #include <array>
+#include <numeric> 
+#include <cmath>
 #include <iomanip>
 #include <unordered_map>
 
@@ -55,6 +57,116 @@ T* create_initialized_array(int size, U value) {
     return arr;
 }
 
+template <typename T>
+std::vector<T> linspace_utils(T start, T end, std::size_t num) {
+    std::vector<T> result(num);
+    T step = (end - start) / (num - 1);
+
+    for (std::size_t i = 0; i < num; ++i) {
+        result[i] = start + i * step;
+    }
+    
+    return result;
+}
+
+template <typename T>
+std::vector<T> vector_typecast(double* arr, int N) {
+    std::vector<T> vec(N);
+    for (int i=0; i<N; i++){
+        vec[i] = static_cast<T>(arr[i]);
+    }
+
+    return vec;
+}
+
+
+// Add two vectors point wise
+template <typename T>
+std::vector<T> add_vectors(std::vector<T> arr1, std::vector<T> arr2){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        res[i] = arr1[i] + arr2[i];
+    }
+
+    return res;
+}
+
+// Subtract two vectors point wise (arr1 - arr2)
+template <typename T>
+std::vector<T> subtract_vectors(std::vector<T> arr1, std::vector<T> arr2){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        res[i] = arr1[i] - arr2[i];
+    }
+
+    return res;
+}
+
+// Multiply two vectors point wise
+template <typename T>
+std::vector<T> multiply_vectors(std::vector<T> arr1, std::vector<T> arr2){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        res[i] = arr1[i] * arr2[i];
+    }
+
+    return res;
+}
+
+// Multiply scalar to vector point wise
+template <typename T>
+std::vector<T> multiply_vector_scalar(std::vector<T> arr1, T value1){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        res[i] = arr1[i] * value1;
+    }
+
+    return res;
+}
+
+// Raise each element of the vector to the passed value
+template <typename T>
+std::vector<T> vector_float_power(std::vector<T> arr1, T value1){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        res[i] = std::pow(arr1[i], value1);
+    }
+
+    return res;
+}
+
+
+// Divide two vectors point wise
+template <typename T>
+std::vector<T> divide_vectors(std::vector<T> arr1, std::vector<T> arr2){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        res[i] = arr1[i] / arr2[i];
+    }
+
+    return res;
+}
+
+// Divide vector point wise by a scalar
+template <typename T>
+std::vector<T> divide_vector_scalar(std::vector<T> arr1, T value1){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        res[i] = arr1[i] / value1;
+    }
+
+    return res;
+}
+
+
+
 
 // 1. For raw pointers + size
 template <typename T>
@@ -68,6 +180,7 @@ void print_array(const T* arr, size_t size) {
     std::cout << " ]\n";
 }
 
+// For vectors, arrays from std library
 template <typename Container>
 void print_array(const Container& cont) {
     std::cout << "[ ";
