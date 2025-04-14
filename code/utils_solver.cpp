@@ -12,6 +12,7 @@ std::string trim(const std::string& s) {
     return s.substr(first, (last - first + 1));
 }
 
+
 // Helper function to check if a string can be converted to an integer.
 bool isInteger(const std::string& s) {
     if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) {
@@ -24,6 +25,7 @@ bool isInteger(const std::string& s) {
     }
     return true;
 }
+
 
 // Helper function to check if a string can be converted to a floating-point number.
 bool isFloat(const std::string& s) {
@@ -41,6 +43,7 @@ bool isFloat(const std::string& s) {
     }
     return true;
 }
+
 
 bool readAndParseJson(const std::string& filename, JsonData& data) {
     // Open the JSON file for reading.
@@ -133,24 +136,6 @@ bool readAndParseJson(const std::string& filename, JsonData& data) {
 }
 
 
-
-
-
-
-
-/********************************************************************************************** */
-
-// Writes the output to a file (preferably .csv file)
-// 
-// Parameters
-// ----------
-// time
-// vec1
-// fileName (send a filename with .csv)
-//
-// Returns
-// -------
-// none -> just saves the outout into the given filename as comma separated values
 void file_writer(std::vector<double> time, std::vector<std::vector<double>> vec1, std::string fileName){
     std::ofstream output_file(fileName);
     
@@ -190,6 +175,7 @@ void file_writer2(std::vector<double> x, std::vector<std::vector<double>> vec1, 
         std::cerr << "Error opening file for writing.\n";
     }
 }
+
 
 void file_writer3(std::string filename_op, std::vector<double> t, std::vector<std::array<double, 2>> x){
     std::ofstream output_file(filename_op);

@@ -202,33 +202,47 @@ T bds2_second_derivative(T dx, T f_il3, T f_il2, T f_il1, T f_i0){
 
 
 
-/**
- * @brief Computes first derivatives using 2nd-order central differences with periodic BCs
- * @tparam T Floating-point type (float, double, long double)
- * @param arr Input array of function values
- * @param n Number of elements in the array
- * @param dx Grid spacing
- * @return T* Newly allocated array containing derivatives (caller must manage memory)
- */
+// Upwind scheme based first derivative
 template <typename T>
-T* central_diff_first_derivative(const T* arr, int n, T dx, int mode) {
-    static_assert(std::is_floating_point<T>::value,
-                 "Template parameter T must be a floating-point type");
-
-    if(n <= 0) throw std::invalid_argument("Array size must be positive");
-    if(dx == T(0)) throw std::invalid_argument("dx cannot be zero");
-
-    T* deriv = new T[n];  // Allocate new array
-
-    if (mode == 1) {
-        for(int i = 0; i < n; ++i) {
-            const int right = (i + 1) % n;
-            const int left = (i - 1 + n) % n;  // Handle negative indices
-            deriv[i] = (arr[right] - arr[left]) / (T(2) * dx);
+std::vector<T> arr_upwind_first_derivative_periodic(std::vector<T> arr1, std::vector<T> u, T dx){
+    std::vector<T> darr_dx(arr1.size());
+    
+    for (int i = 0; i < arr1.size(); i++){
+        if (u[i] >= 0){
+            if (i != 0){
+                darr_dx[i] = bds1_first_derivative(dx, arr1[i - 1], arr1[i]);
+            } else {
+                darr_dx[i] = bds1_first_derivative(dx, arr1[u.size() - 1], arr1[i]);
+            }
+        } else if (u[i] < 0){
+            if (i != (arr1.size()-1)){
+                darr_dx[i] = fds1_first_derivative(dx, arr1[i], arr1[i + 1]);
+            } else {
+                darr_dx[i] = fds1_first_derivative(dx, arr1[i], arr1[0]);
+            }
         }
     }
 
-    return deriv;
+    return darr_dx;
+}
+
+
+// First derivative using 2nd order central difference scheme
+template <typename T>
+std::vector<T> arr_first_derivative_cds_periodic(std::vector<T> arr, T dx){
+    std::vector<T> du_dx(arr.size());
+
+    for (int i = 0; i < arr.size(); i++){
+        if (i != 0 && i != (arr.size() - 1)){
+            du_dx[i] = cds2_first_derivative(dx, arr[i-1], arr[i], arr[i+1]);
+        } else if (i == 0){
+            du_dx[i] = cds2_first_derivative(dx, arr[arr.size()-1] , arr[i], arr[i+1]);
+        } else if (i == (arr.size() - 1)){
+            du_dx[i] = cds2_first_derivative(dx, arr[i-1], arr[i], arr[0]);
+        }
+    }
+
+    return du_dx;
 }
 
 

@@ -31,6 +31,13 @@ struct PrecisionToType<128> {
     using Type = long double;
 };
 
+// Structure to hold the parsed JSON data.
+// You can modify this structure based on the keys you expect in your JSON file.
+struct JsonData {
+    std::unordered_map<std::string, std::string> stringValues;
+    std::unordered_map<std::string, int> integerValues;
+    std::unordered_map<std::string, double> floatValues;
+};
 
 
 /**
@@ -70,6 +77,28 @@ std::vector<T> linspace_utils(T start, T end, std::size_t num) {
 }
 
 template <typename T>
+std::vector<T> vector_vector_typecast(std::vector<double> arr1){
+    std::vector<T> arr2(arr1.size());
+    for (int i=0; i<arr1.size(); i++){
+        arr2[i] = static_cast<T>(arr1[i]);
+    }
+
+    return arr2;
+}
+
+
+template <typename T>
+std::vector<double> vector_vector_typecast_inv(std::vector<T> arr1){
+    std::vector<double> arr2(arr1.size());
+    for (int i=0; i<arr1.size(); i++){
+        arr2[i] = static_cast<double>(arr1[i]);
+    }
+
+    return arr2;
+}
+
+
+template <typename T>
 std::vector<T> vector_typecast(double* arr, int N) {
     std::vector<T> vec(N);
     for (int i=0; i<N; i++){
@@ -78,6 +107,19 @@ std::vector<T> vector_typecast(double* arr, int N) {
 
     return vec;
 }
+
+
+template <typename T>
+std::tuple<double*, int> vector_typecast_inv(std::vector<T> vec) {
+    int N = vec.size();
+    double* arr = new double[N];
+    for (int i=0; i<N; i++){
+        arr[i] = static_cast<double>(vec[i]);
+    }
+
+    return std::make_tuple(arr, N);
+}
+
 
 
 // Add two vectors point wise
@@ -166,6 +208,22 @@ std::vector<T> divide_vector_scalar(std::vector<T> arr1, T value1){
 }
 
 
+// Divide a scalar by vector point wise
+template <typename T>
+std::vector<T> divide_scalar_vector(T value1, std::vector<T> arr1){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        if (arr1[i] != 0){
+            res[i] =  value1 / arr1[i];
+        } else {
+            res[i] = static_cast<T>(999999999);
+        }
+    }
+
+    return res;
+}
+
 
 
 // 1. For raw pointers + size
@@ -180,26 +238,14 @@ void print_array(const T* arr, size_t size) {
     std::cout << " ]\n";
 }
 
-// For vectors, arrays from std library
-template <typename Container>
-void print_array(const Container& cont) {
+template <typename T>
+void print_vector(std::vector<T> vec) {
     std::cout << "[ ";
-    bool first = true;
-    for(const auto& elem : cont) {
-        std::cout << (first ? "" : ", ") << elem;
-        first = false;
+    for (int i = 0; i < vec.size(); i++){
+        std::cout << vec[i] << " ";
     }
-    std::cout << " ]\n";
+    std::cout << "] " << std::endl;
 }
-
-
-// Structure to hold the parsed JSON data.
-// You can modify this structure based on the keys you expect in your JSON file.
-struct JsonData {
-    std::unordered_map<std::string, std::string> stringValues;
-    std::unordered_map<std::string, int> integerValues;
-    std::unordered_map<std::string, double> floatValues;
-};
 
 // Function to read and parse a JSON file using standard library functions.
 // Takes the filename as input and populates the JsonData structure.
@@ -210,6 +256,34 @@ void file_writer(std::vector<double> time, std::vector<std::vector<double>> vec1
 void file_writer2(std::vector<double> x, std::vector<std::vector<double>> vec1, std::string fileName);
 
 void file_writer3(std::string filename_op, std::vector<double> t, std::vector<std::array<double, 2>> x);
+
+
+
+// // --- Helper Functions ---
+
+// // Template function for power, equivalent to np.float_power
+// template<typename T>
+// T float_power(T base, T exp) {
+//     return std::pow(base, exp);
+// }
+
+// // Template function for element-wise maximum of an array and a scalar, equivalent to np.maximum(arr, value)
+// template<typename T, size_t N>
+// std::array<T, N> array_maximum(const std::array<T, N>& arr, T value) {
+//     std::array<T, N> result;
+//     for (size_t i = 0; i < N; ++i) {
+//         result[i] = std::max(arr[i], value);
+//     }
+//     return result;
+// }
+
+// // Template function to sum elements of a std::array, equivalent to np.sum(arr)
+// template<typename T, size_t N>
+// T array_sum(const std::array<T, N>& arr) {
+//     // Start summation with 0.0 of type T
+//     return std::accumulate(arr.begin(), arr.end(), static_cast<T>(0.0));
+// }
+
 
 
 #endif // UTILS_SOLVER_H

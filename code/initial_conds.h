@@ -1,9 +1,17 @@
 #include "utils_solver.h"
 
-
-const std::string sample_gas = "H2O:1.0, H2:8.0, AR:1.0";
-const std::string fuel_gas_comp = "H2:0.41892, H:0, O:0, O2:0.20946, OH:0, H2O:0, HO2:0, H2O2:0, AR:0.0097, N2:0.78084";
-const std::string air_gas_comp = "H2:0, H:0, O:0, O2:0.20946, OH:0, H2O:0, HO2:0, H2O2:0, AR:0.0097, N2:0.78084";
+const std::string gas_composition(std::string gas_name){
+    if (gas_name == "air"){
+        const std::string gas_comp = "H2:0, H:0, O:0, O2:0.20946, OH:0, H2O:0, HO2:0, H2O2:0, AR:0.0097, N2:0.78084";
+        return gas_comp;
+    } else if (gas_name == "fuel"){
+        const std::string gas_comp = "H2:0.41892, H:0, O:0, O2:0.20946, OH:0, H2O:0, HO2:0, H2O2:0, AR:0.0097, N2:0.78084";
+        return gas_comp;
+    } else {
+        const std::string gas_comp = "H2O:1.0, H2:8.0, AR:1.0";
+        return gas_comp;
+    }
+}
 
 /*
 Creates the required initial conditions
