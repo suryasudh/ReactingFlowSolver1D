@@ -7,6 +7,7 @@ all: clean build
 # Clean build artifacts
 clean:
 	rm -f main01.cxx
+	rm -f ../postprocessing/output_sol*
 
 # Build the executable
 build: main01.cxx

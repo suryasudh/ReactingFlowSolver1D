@@ -1,6 +1,7 @@
 {
     "data_folder01": "../data/cantera_files/",
-    "run_num": 1,
+    "outputs_folder01": "../postprocessing/",
+    "run_num": "022",
     "float_precision": 32,
     "boundary_mode" : 1,
     "left_boundary_dirichlet" : 10.0,
@@ -12,8 +13,8 @@
     "Nx": 128,
     "domain_length" : 1.0,
     "timestep" : 0.000000005,
-    "n_iters_total" : 100,
-    "n_iters_save" : 2,
-    "scheme_to_use" : "RK1",
+    "n_iters_total" : 100000,
+    "n_iters_save" : 1000,
+    "scheme_to_use" : "RK2",
     "case_problem" : 1
 }

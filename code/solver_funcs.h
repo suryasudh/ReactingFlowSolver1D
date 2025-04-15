@@ -117,7 +117,7 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
     std::vector<T> d_rho_dt(n_nodes, static_cast<T>(0.0));
     std::vector<T> d_rho_u_dt(n_nodes, static_cast<T>(0.0));
     std::vector<T> d_rho_e0_dt(n_nodes, static_cast<T>(0.0));
-    std::vector<std::vector<T>> d_rho_ys_dt(n_nodes, std::vector<T>(n_species1));
+    std::vector<std::vector<T>> d_rho_ys_dt(n_nodes, std::vector<T>(n_species1, static_cast<T>(0.0)));
 
     /****************************************** 
      *** MASS CONSERVATION
@@ -134,6 +134,57 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
     std::vector<T> convective_flux = multiply_vectors(rho_u_old, u_old);
     std::vector<T> convective_flux_grad = arr_upwind_first_derivative_periodic(convective_flux, u_old, dx1);
 
+    std::vector<T> pressure_grad = arr_first_derivative_cds_periodic(pressure_old, dx1);
+
+    std::vector<T> viscous_flux = multiply_vector_scalar(
+        multiply_vectors(arr_first_derivative_cds_periodic(u_old, dx1), prop00_mu_old), 
+        (static_cast<T>(4.0) / static_cast<T>(3.0)));
+    std::vector<T> viscous_flux_grad = arr_first_derivative_cds_periodic(viscous_flux, dx1);
+
+    d_rho_u_dt = subtract_vectors((viscous_flux_grad, convective_flux_grad), pressure_grad);
+    
+    
+    
+    
+    
+    /****************************************** 
+     *** ENERGY CONSERVATION
+    ******************************************/
+    std::vector<T> energy_flux = multiply_vectors(add_vectors(rho_e0_old, pressure_old), u_old);
+    std::vector<T> energy_flux_grad = arr_first_derivative_cds_periodic(energy_flux, dx1);
+
+    std::vector<T> viscous_work = multiply_vectors(viscous_flux, u_old);
+    std::vector<T> viscous_work_grad = arr_first_derivative_cds_periodic(viscous_work, dx1);
+
+    std::vector<std::vector <T>> conc_grad = arr_first_derivative_cds_periodic(mole_fractions_old, dx1);
+    
+    std::vector<std::vector <T>> diff_flux = divide_vectors_2nd_order(multiply_vectors_2nd_order(multiply_vectors_2nd_order(
+                                multiply_vectors_2nd_order(tiling_vector(rho_old, n_species1), mix_diff_coeffs_old),
+                                mw_species_old), conc_grad), tiling_vector(mean_mix_weight_old, n_species1));
+    std::vector<T> diff_flux_add = vector_reduction_by_sum1(multiply_vectors_2nd_order(enthalpy_k_old, diff_flux));
+    
+    std::vector<T> heat_flux = multiply_vectors(prop05_th_k_old, arr_first_derivative_cds_periodic(temperature_old, dx1));
+    std::vector<T> heat_n_diff_flux = add_vectors(multiply_vector_scalar(heat_flux, static_cast<T>(-1.0)), diff_flux_add);
+
+    std::vector<T> heat_flux_grad = arr_first_derivative_cds_periodic(heat_n_diff_flux, dx1);
+
+    d_rho_e0_dt = subtract_vectors(subtract_vectors(viscous_work_grad, energy_flux_grad), heat_flux_grad);
+    
+
+
+
+
+    /****************************************** 
+     *** SPECIES CONSERVATION
+    ******************************************/       
+    std::vector<std::vector<T>> rho_y_u_old = multiply_vectors_2nd_order(rho_ys_old, tiling_vector(u_old, n_species1));
+    std::vector<std::vector<T>> rho_y_u_grad = arr_first_derivative_cds_periodic(rho_y_u_old, dx1);
+
+    std::vector<std::vector<T>> diff_flux_grad = arr_first_derivative_cds_periodic(diff_flux, dx1);
+    std::vector<std::vector<T>> prod_rates_mws = multiply_vectors_2nd_order(production_rates_old, mw_species_old);
+
+    d_rho_ys_dt = add_vectors(subtract_vectors(
+                    multiply_vector_2nd_order_scalar(rho_y_u_grad, static_cast<T>(-1.0)), diff_flux_grad), prod_rates_mws);
     
     
     return std::make_tuple(d_rho_dt, d_rho_u_dt, d_rho_e0_dt, d_rho_ys_dt, temperature_old, pressure_old);
@@ -152,13 +203,81 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
     std::vector<T> temperature_old;
     std::vector<T> pressure_old;
 
-    std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = 
-        conservation_equations_dt(dx_val, rho_old, 
-        rho_u_old, rho_e0_old, 
-        rho_ys_old, gas_obj);
+    if (scheme == "RK1"){
+        std::vector<T> rho_k1;
+        std::vector<T> rho_u_k1;
+        std::vector<T> rho_e0_k1;
+        std::vector<std::vector<T>> rho_ys_k1;
+        std::vector<T> temperature_old_1;
+        std::vector<T> pressure_old_1;
+
+        std::tie(rho_k1, rho_u_k1, rho_e0_k1, rho_ys_k1, 
+            temperature_old_1, pressure_old_1) = conservation_equations_dt(dx_val, rho_old, rho_u_old, rho_e0_old, 
+                                                                                    rho_ys_old, gas_obj);
+        
+        rho_new = add_vectors(rho_old, multiply_vector_scalar(rho_k1, dt_val));
+        rho_u_new = add_vectors(rho_u_old, multiply_vector_scalar(rho_u_k1, dt_val));
+        rho_e0_new = add_vectors(rho_e0_old, multiply_vector_scalar(rho_e0_k1, dt_val));
+        rho_ys_new = add_vectors(rho_ys_old, multiply_vector_2nd_order_scalar(rho_ys_k1, dt_val));
+        temperature_old = temperature_old_1;
+        pressure_old = pressure_old_1;
+
+        rho_new = vector_value_minimum_limiter(rho_new, 1e-8);
+
+    } else if (scheme == "RK2"){
+        std::vector<T> rho_k1;
+        std::vector<T> rho_u_k1;
+        std::vector<T> rho_e0_k1;
+        std::vector<std::vector<T>> rho_ys_k1;
+        std::vector<T> temperature_old_1;
+        std::vector<T> pressure_old_1;
+
+        std::tie(rho_k1, rho_u_k1, rho_e0_k1, rho_ys_k1, 
+            temperature_old_1, pressure_old_1) = conservation_equations_dt(dx_val, rho_old, rho_u_old, rho_e0_old, 
+                                                                                    rho_ys_old, gas_obj);
+
+        std::vector<T> rho_dt_k1;
+        std::vector<T> rho_u_dt_k1;
+        std::vector<T> rho_e0_dt_k1;
+        std::vector<std::vector<T>> rho_ys_dt_k1;
+        std::vector<T> temperature_old_dt_k1;
+        std::vector<T> pressure_old_dt_k1;
+
+        // Values at 1/2 step in time
+        rho_dt_k1 = add_vectors(rho_old, multiply_vector_scalar(rho_k1, dt_val*static_cast<T>(0.5)));
+        rho_u_dt_k1 = add_vectors(rho_u_old, multiply_vector_scalar(rho_u_k1, dt_val*static_cast<T>(0.5)));
+        rho_e0_dt_k1 = add_vectors(rho_e0_old, multiply_vector_scalar(rho_e0_k1, dt_val*static_cast<T>(0.5)));
+        rho_ys_dt_k1 = add_vectors(rho_ys_old, multiply_vector_2nd_order_scalar(rho_ys_k1, dt_val*static_cast<T>(0.5)));
+        temperature_old_dt_k1 = temperature_old_1;
+        pressure_old_dt_k1 = pressure_old_1;
+
+        // Determining the slopes at the half step in time
+        std::vector<T> rho_k2;
+        std::vector<T> rho_u_k2;
+        std::vector<T> rho_e0_k2;
+        std::vector<std::vector<T>> rho_ys_k2;
+        std::vector<T> temperature_old_2;
+        std::vector<T> pressure_old_2;
+
+        std::tie(rho_k2, rho_u_k2, rho_e0_k2, rho_ys_k2, 
+            temperature_old_2, pressure_old_2) = conservation_equations_dt((dx_val/static_cast<T>(2.0)), rho_dt_k1, rho_u_dt_k1, rho_e0_dt_k1, 
+                                                                                    rho_ys_dt_k1, gas_obj);
+        
+        // Taking a step now from starting position using the slopes at the half step
+        rho_new = add_vectors(rho_old, multiply_vector_scalar(rho_k2, dt_val));
+        rho_u_new = add_vectors(rho_u_old, multiply_vector_scalar(rho_u_k2, dt_val));
+        rho_e0_new = add_vectors(rho_e0_old, multiply_vector_scalar(rho_e0_k2, dt_val));
+        rho_ys_new = add_vectors(rho_ys_old, multiply_vector_2nd_order_scalar(rho_ys_k2, dt_val));
+        temperature_old = temperature_old_2;
+        pressure_old = pressure_old_2;
+
+        rho_new = vector_value_minimum_limiter(rho_new, 1e-8); 
+    } 
+    
 
     return std::make_tuple(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old);                                                          
 }
+
 
 
 

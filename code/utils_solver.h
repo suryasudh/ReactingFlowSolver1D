@@ -67,7 +67,7 @@ T* create_initialized_array(int size, U value) {
 template <typename T>
 std::vector<T> linspace_utils(T start, T end, std::size_t num) {
     std::vector<T> result(num);
-    T step = (end - start) / (num - 1);
+    T step = (end - start) / (num);
 
     for (std::size_t i = 0; i < num; ++i) {
         result[i] = start + i * step;
@@ -134,6 +134,21 @@ std::vector<T> add_vectors(std::vector<T> arr1, std::vector<T> arr2){
     return res;
 }
 
+template <typename T>
+std::vector<std::vector<T>> add_vectors(std::vector<std::vector<T>> arr1, std::vector<std::vector<T>> arr2){
+    std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
+
+    for (int i = 0; i < arr1.size(); i++){
+        for (int j = 0; j < arr1[0].size(); j++){
+            res[i][j] = arr1[i][j] + arr2[i][j];
+        }
+    }
+
+    return res;
+}
+
+
+
 // Subtract two vectors point wise (arr1 - arr2)
 template <typename T>
 std::vector<T> subtract_vectors(std::vector<T> arr1, std::vector<T> arr2){
@@ -145,6 +160,23 @@ std::vector<T> subtract_vectors(std::vector<T> arr1, std::vector<T> arr2){
 
     return res;
 }
+
+
+// Subtract two vectors point wise (arr1 - arr2)
+// @overload 
+template <typename T>
+std::vector<std::vector<T>> subtract_vectors(std::vector<std::vector<T>> arr1, std::vector<std::vector<T>> arr2){
+    std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
+
+    for (int i = 0; i < arr1.size(); i++){
+        for (int j = 0; j < arr1[0].size(); j++){
+            res[i][j] = arr1[i][j] - arr2[i][j];
+        }
+    }
+
+    return res;
+}
+
 
 // Multiply two vectors point wise
 template <typename T>
@@ -165,6 +197,53 @@ std::vector<T> multiply_vector_scalar(std::vector<T> arr1, T value1){
 
     for (int i = 0; i < arr1.size(); i++){
         res[i] = arr1[i] * value1;
+    }
+
+    return res;
+}
+
+
+// Multiply two vectors point wise
+template <typename T>
+std::vector<std::vector<T>> multiply_vectors_2nd_order(std::vector<std::vector<T>> arr1, std::vector<std::vector<T>> arr2){
+    std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
+
+    for (int i = 0; i < arr1.size(); i++){
+        for (int j = 0; j < arr1[0].size(); j++){
+            res[i][j] = arr1[i][j] * arr2[i][j];
+        }
+    }
+
+    return res;
+}
+
+// Multiply vector-scalar point wise
+template <typename T>
+std::vector<std::vector<T>> multiply_vector_2nd_order_scalar(std::vector<std::vector<T>> arr1, T value1){
+    std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
+
+    for (int i = 0; i < arr1.size(); i++){
+        for (int j = 0; j < arr1[0].size(); j++){
+            res[i][j] = arr1[i][j] * value1;
+        }
+    }
+
+    return res;
+}
+
+
+// Reduce vector of 2nd order to vector of 1st order by adding across the 1st axis
+template <typename T>
+std::vector<T> vector_reduction_by_sum1(std::vector<std::vector<T>> arr){
+    int grid_size = arr.size();
+    int n_species = arr[0].size();
+    
+    std::vector<T> res(grid_size);
+    
+    for (int j = 0; j < grid_size; j++){
+        for (int i = 0; i < n_species; i++){
+            res[j] += arr[j][i];
+        }
     }
 
     return res;
@@ -225,6 +304,71 @@ std::vector<T> divide_scalar_vector(T value1, std::vector<T> arr1){
 }
 
 
+// Divide two vectors point wise
+template <typename T>
+std::vector<std::vector<T>> divide_vectors_2nd_order(std::vector<std::vector<T>> arr1, std::vector<std::vector<T>> arr2){
+    std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
+
+    for (int i = 0; i < arr1.size(); i++){
+        for (int j = 0; j < arr1[0].size(); j++){
+            res[i][j] = arr1[i][j] / arr2[i][j];
+        }
+    }
+
+    return res;
+}
+
+
+template <typename T>
+std::vector<std::vector<T>> tiling_vector(std::vector<T> arr, int n_species){
+    int grid_size = arr.size();
+    std::vector<std::vector<T>> res(grid_size, std::vector<T>(n_species));
+    
+    for (int j = 0; j < grid_size; j++){
+        for (int i = 0; i < n_species; i++){
+            res[j][i] = arr[j];
+        }
+    }
+
+    return res;
+}
+
+
+template <typename T>
+std::vector<T> vector_value_minimum_limiter(std::vector<T> arr1, T value1){
+    std::vector<T> res(arr1.size());
+
+    for (int i = 0; i < arr1.size(); i++){
+        if (arr1[i] < value1){
+            res[i] = value1;
+        } else {
+            res[i] = arr1[i];
+        }
+    }
+
+    return res;
+}
+
+// @overload 
+template <typename T>
+std::vector<std::vector<T>> vector_value_minimum_limiter(std::vector<std::vector<T>> arr1, T value1){
+    std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
+
+    for (int i = 0; i < arr1.size(); i++){
+        for (int j=0; j < arr1[0].size(); j++){
+            if (arr1[i][j] < value1){
+                res[i][j] = value1;
+            } else {
+                res[i][j] = arr1[i][j];
+            }
+        }
+    }
+
+    return res;
+}
+
+
+
 
 // 1. For raw pointers + size
 template <typename T>
@@ -247,17 +391,37 @@ void print_vector(std::vector<T> vec) {
     std::cout << "] " << std::endl;
 }
 
+
+template <typename T>
+void file_writer_vector(T time, std::vector<T> vec1, std::string fileName, int printflag1){
+    std::ofstream output_file(fileName, std::ios::app);
+    
+    if (output_file.is_open()) {
+        output_file << std::fixed << std::setprecision(15) << time << ",";
+        for (int i = 0; i < vec1.size(); i++){
+            output_file <<        std::fixed << std::setprecision(15) << vec1[i] << "," ;
+        }
+        output_file << std::endl;
+        output_file.close();
+
+        if (printflag1 == 1){
+            std::cout << "File written successfully at timestep: " << time << "\n";
+        }
+    } else {
+        std::cerr << "Error opening file for writing.\n";
+    }
+}
+
+
+
+
 // Function to read and parse a JSON file using standard library functions.
 // Takes the filename as input and populates the JsonData structure.
 bool readAndParseJson(const std::string& filename, JsonData& data);
 
-void file_writer(std::vector<double> time, std::vector<std::vector<double>> vec1, std::string fileName);
+std::string make_filename(std::string folder, std::string type, std::string run_num);
 
-void file_writer2(std::vector<double> x, std::vector<std::vector<double>> vec1, std::string fileName);
-
-void file_writer3(std::string filename_op, std::vector<double> t, std::vector<std::array<double, 2>> x);
-
-
+void clear_file(const std::string& fileName);
 
 // // --- Helper Functions ---
 

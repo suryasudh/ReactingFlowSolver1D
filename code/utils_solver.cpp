@@ -136,61 +136,24 @@ bool readAndParseJson(const std::string& filename, JsonData& data) {
 }
 
 
-void file_writer(std::vector<double> time, std::vector<std::vector<double>> vec1, std::string fileName){
-    std::ofstream output_file(fileName);
-    
-    if (output_file.is_open()) {
-        output_file << "time" << "," << "analytic" << "," << "euler" << "," << "AB2" << "," << "RK2" << "\n";
-        for (int i = 0; i < time.size(); i++){
-            output_file <<        std::fixed << std::setprecision(15) << time[i]
-                        << "," << std::fixed << std::setprecision(15) << vec1[0][i]
-                        << "," << std::fixed << std::setprecision(15) << vec1[1][i]
-                        << "," << std::fixed << std::setprecision(15) << vec1[2][i]
-                        << "," << std::fixed << std::setprecision(15) << vec1[3][i]
-                        << "\n";
-        }
-        output_file.close();
-        std::cout << "File written successfully.\n";
-    } else {
-        std::cerr << "Error opening file for writing.\n";
-    }
+std::string make_filename(std::string folder, std::string var_name, std::string run_num) {
+    std::string filename = folder;                    // Start with the folder
+    filename += "output_sol_";                        // Append the prefix
+    filename += var_name;                             // Append the type (e.g., "u", "dens")
+    filename += "_";                                  // Append the underscore
+    filename += run_num;                              // Append the run number
+    filename += ".csv";                               // Append the file extension
+    return filename;                                  // Return the resulting string
 }
 
 
-void file_writer2(std::vector<double> x, std::vector<std::vector<double>> vec1, std::string fileName){
-    std::ofstream output_file(fileName);
-    
+void clear_file(const std::string& fileName) {
+    std::ofstream output_file(fileName, std::ios::trunc); // trunc clears the file
     if (output_file.is_open()) {
-        output_file << "x" << "," << "euler_ext" << "," << "euler_imp" << "," << "euler_exp" << "\n";
-        for (int i = 0; i < x.size(); i++){
-            output_file <<        std::fixed << std::setprecision(15) << x[i] 
-                        << "," << std::fixed << std::setprecision(15) << vec1[0][i]
-                        << "," << std::fixed << std::setprecision(15) << vec1[1][i]
-                        << "," << std::fixed << std::setprecision(15) << vec1[2][i]
-                        << "\n";
-        }
         output_file.close();
-        std::cout << "File written successfully.\n";
+        std::cout << "File cleared: " << fileName << "\n";
     } else {
-        std::cerr << "Error opening file for writing.\n";
+        std::cerr << "Error clearing file: " << fileName << "\n";
     }
 }
 
-
-void file_writer3(std::string filename_op, std::vector<double> t, std::vector<std::array<double, 2>> x){
-    std::ofstream output_file(filename_op);
-            
-    if (output_file.is_open()) {
-        output_file << "time" << "," << "x" << "," << "z" << "\n";
-        for (int i = 0; i < t.size(); i++){
-            output_file <<        std::fixed << std::setprecision(15) << t[i]
-                        << "," << std::fixed << std::setprecision(15) << x[i][0]
-                        << "," << std::fixed << std::setprecision(15) << x[i][1]
-                        << "\n";
-        }
-        output_file.close();
-        std::cout << "File written successfully.\n";
-    } else {
-        std::cerr << "Error opening file for writing.\n";
-    }
-}

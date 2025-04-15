@@ -26,7 +26,7 @@ JsonData json_reader(const std::string& filename) {
         std::cout << "The options chosen for the run are:" << std::endl;
         std::cout << "*********************************************************" << std::endl;
         std::cout << "data_folder01:      " << config.stringValues["data_folder01"] << std::endl;
-        std::cout << "run_num:            " << config.integerValues["run_num"] << std::endl;
+        std::cout << "run_num:            " << config.stringValues["run_num"] << std::endl;
         std::cout << "float_precision:    " << config.integerValues["float_precision"] << std::endl;
         std::cout << "boundary_mode:      " << config.integerValues["boundary_mode"] << std::endl;
         std::cout << "init_temp:          " << config.floatValues["init_temp"] << std::endl;
@@ -73,8 +73,9 @@ template <int Precision>
 void FluidSolver1DFunc(JsonData config) {
     using Real = typename PrecisionToType<Precision>::Type;
     
-    const std::string data_folder01 = config.stringValues["data_folder01"];
-    const int run_num = config.integerValues["run_num"];
+    std::string data_folder01 = config.stringValues["data_folder01"];
+    std::string outputs_folder01 = config.stringValues["outputs_folder01"];
+    std::string run_num = config.stringValues["run_num"];
     const int float_precision = config.integerValues["float_precision"];
 
     // Boundary conditions
@@ -122,9 +123,32 @@ void FluidSolver1DFunc(JsonData config) {
     std::vector<Real> temperature_old, pressure_old;
 
     std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new) = solver.get_initial_vals(case1);
-
-    std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = solver.solver_func(rho_new, rho_u_new, rho_e0_new, rho_ys_new);
     
+    std::vector<std::string> variables_to_save = {"u", "dens", "temp", "pres"};
+    std::vector<std::string> filenames(0);
+    
+    for (string variable : variables_to_save) {
+        filenames.push_back(make_filename(outputs_folder01, variable, run_num));    
+    }
+    
+    for (string filename : filenames) {
+        clear_file(filename);
+    }
+
+    for (int i=0; i<n_iters_total; i++){
+        Real time_keeper = static_cast<Real>(i) * timestep;
+
+        std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = solver.solver_func(rho_new, rho_u_new, rho_e0_new, rho_ys_new);
+        std::vector<Real> u_values = divide_vectors(rho_u_new, rho_new);
+
+        if (i % n_iters_save == 0){
+            file_writer_vector(time_keeper, u_values, filenames[0], 0);
+            file_writer_vector(time_keeper, rho_new, filenames[1], 0);
+            file_writer_vector(time_keeper, temperature_old, filenames[2], 0);
+            file_writer_vector(time_keeper, pressure_old, filenames[3], 1);
+        }
+    }
+
     std::cout << "so far, so good" << std::endl;
 }
 

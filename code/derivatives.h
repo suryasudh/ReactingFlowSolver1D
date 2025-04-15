@@ -246,6 +246,32 @@ std::vector<T> arr_first_derivative_cds_periodic(std::vector<T> arr, T dx){
 }
 
 
+// First derivative using 2nd order central difference scheme
+// @overloaded function
+// this is for vector<vector<T>>
+template <typename T>
+std::vector<std::vector <T>> arr_first_derivative_cds_periodic(std::vector<std::vector <T>> arr, T dx){
+    int grid_size = arr.size();
+    int n_species = arr[0].size();
+    
+    std::vector<std::vector <T>> du_dx(grid_size, std::vector<T>(n_species));
+    
+    for (int j = 0; j < n_species; j++){
+        for (int i = 0; i < grid_size; i++){
+            if (i != 0 && i != (grid_size - 1)){
+                du_dx[i][j] = cds2_first_derivative(dx, arr[i-1][j], arr[i][j], arr[i+1][j]);
+            } else if (i == 0){
+                du_dx[i][j] = cds2_first_derivative(dx, arr[grid_size-1][j] , arr[i][j], arr[i+1][j]);
+            } else if (i == (grid_size - 1)){
+                du_dx[i][j] = cds2_first_derivative(dx, arr[i-1][j], arr[i][j], arr[0][j]);
+            }
+        }
+    }
+
+    return du_dx;
+}
+
+
 
 
 #endif // DERIVATIVES_H

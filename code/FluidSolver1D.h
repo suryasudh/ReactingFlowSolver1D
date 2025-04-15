@@ -68,7 +68,8 @@ class FluidSolver1D {
             Nx = Nx_passed;
             dx = L / static_cast<T>(Nx);
 
-            x = linspace_utils(static_cast<T>(0.0), L, Nx);    
+            x = linspace_utils(static_cast<T>(0.0), L, Nx);  
+            print_vector(x);  
             
             scheme_str = scheme_str_passed;
             boundary_mode = boundary_mode_passed;

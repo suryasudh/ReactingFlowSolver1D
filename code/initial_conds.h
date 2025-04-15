@@ -37,11 +37,11 @@ Creates the required initial conditions
 */
 template <typename T>
 std::vector<T> initial_cond_on_u_case1(std::vector<T> x, T domain_length){
-    int grid_size = x.size() - 1;
+    int grid_size = x.size();
     
-    std::vector<double> u(grid_size+1);
+    std::vector<double> u(grid_size);
 
-    for (int i = 0; i < grid_size+1; i++){
+    for (int i = 0; i < grid_size; i++){
         u[i] = static_cast<T>(0.01) * std::sin(2 * 3.14159265358979323846 * (x[i]/domain_length));
     }
     
