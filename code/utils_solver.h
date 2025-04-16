@@ -349,7 +349,9 @@ std::vector<T> vector_value_minimum_limiter(std::vector<T> arr1, T value1){
     return res;
 }
 
-// @overload 
+
+
+// @overload
 template <typename T>
 std::vector<std::vector<T>> vector_value_minimum_limiter(std::vector<std::vector<T>> arr1, T value1){
     std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
@@ -387,6 +389,18 @@ void print_vector(std::vector<T> vec) {
     std::cout << "[ ";
     for (int i = 0; i < vec.size(); i++){
         std::cout << vec[i] << " ";
+    }
+    std::cout << "] " << std::endl;
+}
+
+template <typename T>
+void print_vector(std::vector<std::vector<T>> vec) {
+    std::cout << "[ ";
+    for (int i = 0; i < vec.size(); i++){
+        for (int j=0; j<vec[0].size(); j++){
+            std::cout << vec[i][j] << " ";
+        }
+        std::cout << "" << std::endl;      
     }
     std::cout << "] " << std::endl;
 }

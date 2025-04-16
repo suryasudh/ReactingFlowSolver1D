@@ -247,7 +247,7 @@ std::vector<T> arr_first_derivative_cds_periodic(std::vector<T> arr, T dx){
 
 
 // First derivative using 2nd order central difference scheme
-// @overloaded function
+// @overload 
 // this is for vector<vector<T>>
 template <typename T>
 std::vector<std::vector <T>> arr_first_derivative_cds_periodic(std::vector<std::vector <T>> arr, T dx){

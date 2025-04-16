@@ -48,6 +48,12 @@ class FluidSolver1D {
         T right_boundary_neumann;
 
         std::string scheme_str;
+        int current_iteration = 0;
+
+        std::vector<std::vector<T>> rho_old_history;
+        std::vector<std::vector<T>> rho_u_old_history;
+        std::vector<std::vector<T>> rho_e0_old_history;
+        std::vector<std::vector<std::vector<T>>> rho_ys_old_history;
 
         FluidSolver1D(std::shared_ptr<Cantera::Solution>  gas_passed, T T0_passed, T P0_passed, 
                         std::string X0_passed, T L_passed, std::size_t Nx_passed, T dt_passed,
@@ -69,7 +75,7 @@ class FluidSolver1D {
             dx = L / static_cast<T>(Nx);
 
             x = linspace_utils(static_cast<T>(0.0), L, Nx);  
-            print_vector(x);  
+            // print_vector(x);  
             
             scheme_str = scheme_str_passed;
             boundary_mode = boundary_mode_passed;
@@ -114,6 +120,10 @@ class FluidSolver1D {
                 }
             }
 
+            rho_old_history.push_back(q00_rho);
+            rho_u_old_history.push_back(q01_rho_u);
+            rho_e0_old_history.push_back(q02_rho_e0);
+            rho_ys_old_history.push_back(q03_rho_ys);
 
             return std::make_tuple(q00_rho, q01_rho_u, q02_rho_e0, q03_rho_ys);
         }
@@ -121,8 +131,10 @@ class FluidSolver1D {
 
     
         std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-                    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> solver_func(std::vector<T> q00_rho, std::vector<T> q01_rho_u, 
-                                                                            std::vector<T> q02_rho_e0, std::vector<std::vector<T>> q03_rho_ys) {
+            std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> solver_func(std::vector<T> q00_rho, 
+                std::vector<T> q01_rho_u, std::vector<T> q02_rho_e0, std::vector<std::vector<T>> q03_rho_ys) {
+            current_iteration += 1;
+
             std::vector<T> rho_old = q00_rho;
             std::vector<T> rho_u_old = q01_rho_u;
             std::vector<T> rho_e0_old = q02_rho_e0;
@@ -135,9 +147,17 @@ class FluidSolver1D {
             std::vector<T> temperature_old;
             std::vector<T> pressure_old;
 
-            std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = time_stepper(dt, dx, 
-                                                                                                    rho_old, rho_u_old,
-                                                                                                    rho_e0_old, rho_ys_old, gas, scheme_str);
+            std::tuple<std::vector<std::vector<T>>, std::vector<std::vector<T>>, 
+            std::vector<std::vector<T>>, std::vector<std::vector<std::vector<T>>>> history_1st_five_steps = std::make_tuple(rho_old_history, rho_u_old_history, rho_e0_old_history, rho_ys_old_history);
+            std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = time_stepper(dt, dx, rho_old, rho_u_old, rho_e0_old, rho_ys_old, gas, scheme_str, current_iteration, history_1st_five_steps);
+
+            
+            if (current_iteration < 5){
+                rho_old_history.push_back(rho_new);
+                rho_u_old_history.push_back(rho_u_new);
+                rho_e0_old_history.push_back(rho_e0_new);
+                rho_ys_old_history.push_back(rho_ys_new);
+            }
             
             return std::make_tuple(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old);
         }

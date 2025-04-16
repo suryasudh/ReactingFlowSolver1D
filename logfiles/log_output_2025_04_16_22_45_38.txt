@@ -1,0 +1,227 @@
+configuration.json file parsed successfully!
+*********************************************************
+The options chosen for the run are:
+*********************************************************
+data_folder01:      ../data/cantera_files/
+run_num:            022
+float_precision:    32
+boundary_mode:      1
+init_temp:          300
+init_pres:          101325
+Nx:                 128
+domain_length:      1
+timestep:           5e-09
+n_iters_total:      200000
+n_iters_save:       1000
+scheme_to_use:      RK2
+case # of problem:  1
+*********************************************************
+Periodic boundary condition chosen 
+*********************************************************
+File cleared: ../postprocessing/output_sol_u_022.csv
+File cleared: ../postprocessing/output_sol_dens_022.csv
+File cleared: ../postprocessing/output_sol_temp_022.csv
+File cleared: ../postprocessing/output_sol_pres_022.csv
+File written successfully at timestep: 0
+File written successfully at timestep: 5e-06
+File written successfully at timestep: 1e-05
+File written successfully at timestep: 1.5e-05
+File written successfully at timestep: 2e-05
+File written successfully at timestep: 2.5e-05
+File written successfully at timestep: 3e-05
+File written successfully at timestep: 3.5e-05
+File written successfully at timestep: 4e-05
+File written successfully at timestep: 4.5e-05
+File written successfully at timestep: 5e-05
+File written successfully at timestep: 5.5e-05
+File written successfully at timestep: 6e-05
+File written successfully at timestep: 6.5e-05
+File written successfully at timestep: 7e-05
+File written successfully at timestep: 7.5e-05
+File written successfully at timestep: 8e-05
+File written successfully at timestep: 8.5e-05
+File written successfully at timestep: 9e-05
+File written successfully at timestep: 9.5e-05
+File written successfully at timestep: 0.0001
+File written successfully at timestep: 0.000105
+File written successfully at timestep: 0.00011
+File written successfully at timestep: 0.000115
+File written successfully at timestep: 0.00012
+File written successfully at timestep: 0.000125
+File written successfully at timestep: 0.00013
+File written successfully at timestep: 0.000135
+File written successfully at timestep: 0.00014
+File written successfully at timestep: 0.000145
+File written successfully at timestep: 0.00015
+File written successfully at timestep: 0.000155
+File written successfully at timestep: 0.00016
+File written successfully at timestep: 0.000165
+File written successfully at timestep: 0.00017
+File written successfully at timestep: 0.000175
+File written successfully at timestep: 0.00018
+File written successfully at timestep: 0.000185
+File written successfully at timestep: 0.00019
+File written successfully at timestep: 0.000195
+File written successfully at timestep: 0.0002
+File written successfully at timestep: 0.000205
+File written successfully at timestep: 0.00021
+File written successfully at timestep: 0.000215
+File written successfully at timestep: 0.00022
+File written successfully at timestep: 0.000225
+File written successfully at timestep: 0.00023
+File written successfully at timestep: 0.000235
+File written successfully at timestep: 0.00024
+File written successfully at timestep: 0.000245
+File written successfully at timestep: 0.00025
+File written successfully at timestep: 0.000255
+File written successfully at timestep: 0.00026
+File written successfully at timestep: 0.000265
+File written successfully at timestep: 0.00027
+File written successfully at timestep: 0.000275
+File written successfully at timestep: 0.00028
+File written successfully at timestep: 0.000285
+File written successfully at timestep: 0.00029
+File written successfully at timestep: 0.000295
+File written successfully at timestep: 0.0003
+File written successfully at timestep: 0.000305
+File written successfully at timestep: 0.00031
+File written successfully at timestep: 0.000315
+File written successfully at timestep: 0.00032
+File written successfully at timestep: 0.000325
+File written successfully at timestep: 0.00033
+File written successfully at timestep: 0.000335
+File written successfully at timestep: 0.00034
+File written successfully at timestep: 0.000345
+File written successfully at timestep: 0.00035
+File written successfully at timestep: 0.000355
+File written successfully at timestep: 0.00036
+File written successfully at timestep: 0.000365
+File written successfully at timestep: 0.00037
+File written successfully at timestep: 0.000375
+File written successfully at timestep: 0.00038
+File written successfully at timestep: 0.000385
+File written successfully at timestep: 0.00039
+File written successfully at timestep: 0.000395
+File written successfully at timestep: 0.0004
+File written successfully at timestep: 0.000405
+File written successfully at timestep: 0.00041
+File written successfully at timestep: 0.000415
+File written successfully at timestep: 0.00042
+File written successfully at timestep: 0.000425
+File written successfully at timestep: 0.00043
+File written successfully at timestep: 0.000435
+File written successfully at timestep: 0.00044
+File written successfully at timestep: 0.000445
+File written successfully at timestep: 0.00045
+File written successfully at timestep: 0.000455
+File written successfully at timestep: 0.00046
+File written successfully at timestep: 0.000465
+File written successfully at timestep: 0.00047
+File written successfully at timestep: 0.000475
+File written successfully at timestep: 0.00048
+File written successfully at timestep: 0.000485
+File written successfully at timestep: 0.00049
+File written successfully at timestep: 0.000495
+File written successfully at timestep: 0.0005
+File written successfully at timestep: 0.000505
+File written successfully at timestep: 0.00051
+File written successfully at timestep: 0.000515
+File written successfully at timestep: 0.00052
+File written successfully at timestep: 0.000525
+File written successfully at timestep: 0.00053
+File written successfully at timestep: 0.000535
+File written successfully at timestep: 0.00054
+File written successfully at timestep: 0.000545
+File written successfully at timestep: 0.00055
+File written successfully at timestep: 0.000555
+File written successfully at timestep: 0.00056
+File written successfully at timestep: 0.000565
+File written successfully at timestep: 0.00057
+File written successfully at timestep: 0.000575
+File written successfully at timestep: 0.00058
+File written successfully at timestep: 0.000585
+File written successfully at timestep: 0.00059
+File written successfully at timestep: 0.000595
+File written successfully at timestep: 0.0006
+File written successfully at timestep: 0.000605
+File written successfully at timestep: 0.00061
+File written successfully at timestep: 0.000615
+File written successfully at timestep: 0.00062
+File written successfully at timestep: 0.000625
+File written successfully at timestep: 0.00063
+File written successfully at timestep: 0.000635
+File written successfully at timestep: 0.00064
+File written successfully at timestep: 0.000645
+File written successfully at timestep: 0.00065
+File written successfully at timestep: 0.000655
+File written successfully at timestep: 0.00066
+File written successfully at timestep: 0.000665
+File written successfully at timestep: 0.00067
+File written successfully at timestep: 0.000675
+File written successfully at timestep: 0.00068
+File written successfully at timestep: 0.000685
+File written successfully at timestep: 0.00069
+File written successfully at timestep: 0.000695
+File written successfully at timestep: 0.0007
+File written successfully at timestep: 0.000705
+File written successfully at timestep: 0.00071
+File written successfully at timestep: 0.000715
+File written successfully at timestep: 0.00072
+File written successfully at timestep: 0.000725
+File written successfully at timestep: 0.00073
+File written successfully at timestep: 0.000735
+File written successfully at timestep: 0.00074
+File written successfully at timestep: 0.000745
+File written successfully at timestep: 0.00075
+File written successfully at timestep: 0.000755
+File written successfully at timestep: 0.00076
+File written successfully at timestep: 0.000765
+File written successfully at timestep: 0.00077
+File written successfully at timestep: 0.000775
+File written successfully at timestep: 0.00078
+File written successfully at timestep: 0.000785
+File written successfully at timestep: 0.00079
+File written successfully at timestep: 0.000795
+File written successfully at timestep: 0.0008
+File written successfully at timestep: 0.000805
+File written successfully at timestep: 0.00081
+File written successfully at timestep: 0.000815
+File written successfully at timestep: 0.00082
+File written successfully at timestep: 0.000825
+File written successfully at timestep: 0.00083
+File written successfully at timestep: 0.000835
+File written successfully at timestep: 0.00084
+File written successfully at timestep: 0.000845
+File written successfully at timestep: 0.00085
+File written successfully at timestep: 0.000855
+File written successfully at timestep: 0.00086
+File written successfully at timestep: 0.000865
+File written successfully at timestep: 0.00087
+File written successfully at timestep: 0.000875
+File written successfully at timestep: 0.00088
+File written successfully at timestep: 0.000885
+File written successfully at timestep: 0.00089
+File written successfully at timestep: 0.000895
+File written successfully at timestep: 0.0009
+File written successfully at timestep: 0.000905
+File written successfully at timestep: 0.00091
+File written successfully at timestep: 0.000915
+File written successfully at timestep: 0.00092
+File written successfully at timestep: 0.000925
+File written successfully at timestep: 0.00093
+File written successfully at timestep: 0.000935
+File written successfully at timestep: 0.00094
+File written successfully at timestep: 0.000945
+File written successfully at timestep: 0.00095
+File written successfully at timestep: 0.000955
+File written successfully at timestep: 0.00096
+File written successfully at timestep: 0.000965
+File written successfully at timestep: 0.00097
+File written successfully at timestep: 0.000975
+File written successfully at timestep: 0.00098
+File written successfully at timestep: 0.000985
+File written successfully at timestep: 0.00099
+File written successfully at timestep: 0.000995
+Running time (without I/O time) is: 152.714 seconds
+so far, so good
+Time difference (sec) = 152.866

@@ -5,6 +5,7 @@
 #include "schemes.h"
 #include "FluidSolver1D.h"
 #include <iostream>
+#include <chrono>
 
 using namespace Cantera;
 
@@ -71,6 +72,10 @@ JsonData json_reader(const std::string& filename) {
 
 template <int Precision>
 void FluidSolver1DFunc(JsonData config) {
+    std::vector<std::chrono::steady_clock::time_point> time_checkpoints_start(0);
+    std::vector<std::chrono::steady_clock::time_point> time_checkpoints_end(0);
+    time_checkpoints_start.push_back(std::chrono::steady_clock::now());
+    
     using Real = typename PrecisionToType<Precision>::Type;
     
     std::string data_folder01 = config.stringValues["data_folder01"];
@@ -123,6 +128,8 @@ void FluidSolver1DFunc(JsonData config) {
     std::vector<Real> temperature_old, pressure_old;
 
     std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new) = solver.get_initial_vals(case1);
+
+    time_checkpoints_end.push_back(std::chrono::steady_clock::now());
     
     std::vector<std::string> variables_to_save = {"u", "dens", "temp", "pres"};
     std::vector<std::string> filenames(0);
@@ -136,10 +143,15 @@ void FluidSolver1DFunc(JsonData config) {
     }
 
     for (int i=0; i<n_iters_total; i++){
+        time_checkpoints_start.push_back(std::chrono::steady_clock::now());
+        
         Real time_keeper = static_cast<Real>(i) * timestep;
 
         std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = solver.solver_func(rho_new, rho_u_new, rho_e0_new, rho_ys_new);
         std::vector<Real> u_values = divide_vectors(rho_u_new, rho_new);
+
+        time_checkpoints_end.push_back(std::chrono::steady_clock::now());
+       
 
         if (i % n_iters_save == 0){
             file_writer_vector(time_keeper, u_values, filenames[0], 0);
@@ -149,11 +161,21 @@ void FluidSolver1DFunc(JsonData config) {
         }
     }
 
+    double total_time = 0.0;
+    for (int i=0; i<time_checkpoints_start.size(); i++){
+        // std::cout << "Loop time: " << std::chrono::duration_cast<std::chrono::microseconds>(time_checkpoints_end[i] - time_checkpoints_start[i]).count() /1000000.0 << std::endl;
+        total_time += static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(time_checkpoints_end[i] - time_checkpoints_start[i]).count() /1000000.0);
+    }
+    std::cout << "Running time (without I/O time) is: " << total_time << " seconds" << std::endl;
+
     std::cout << "so far, so good" << std::endl;
 }
 
 
 int main() {
+
+    std::chrono::steady_clock::time_point begin_time_checkpoint1 = std::chrono::steady_clock::now();
+    
     JsonData config;
     std::string filename = "configuration.json"; // Replace with your JSON filename
 
@@ -166,6 +188,11 @@ int main() {
         std::cout << err.what() << std::endl;
         return 1;
     }
+
+
+    std::chrono::steady_clock::time_point end_time_checkpoint_final = std::chrono::steady_clock::now();
+    std::cout << "Time difference (sec) = " <<  
+        (std::chrono::duration_cast<std::chrono::microseconds>(end_time_checkpoint_final - begin_time_checkpoint1).count()) /1000000.0  <<std::endl;
 
     return 0;
 }
