@@ -13,8 +13,8 @@
     "Nx": 128,
     "domain_length" : 1.0,
     "timestep" : 0.000000005,
-    "n_iters_total" : 200000,
+    "n_iters_total" : 4000,
     "n_iters_save" : 1000,
-    "scheme_to_use" : "RK2",
+    "scheme_to_use" : "RK4",
     "case_problem" : 1
 }

@@ -77,7 +77,7 @@ std::vector<T> linspace_utils(T start, T end, std::size_t num) {
 }
 
 template <typename T>
-std::vector<T> vector_vector_typecast(std::vector<double> arr1){
+std::vector<T> vector_vector_typecast(const std::vector<double>& arr1){
     std::vector<T> arr2(arr1.size());
     for (int i=0; i<arr1.size(); i++){
         arr2[i] = static_cast<T>(arr1[i]);
@@ -88,7 +88,7 @@ std::vector<T> vector_vector_typecast(std::vector<double> arr1){
 
 
 template <typename T>
-std::vector<double> vector_vector_typecast_inv(std::vector<T> arr1){
+std::vector<double> vector_vector_typecast_inv(const std::vector<T>& arr1){
     std::vector<double> arr2(arr1.size());
     for (int i=0; i<arr1.size(); i++){
         arr2[i] = static_cast<double>(arr1[i]);
@@ -110,7 +110,7 @@ std::vector<T> vector_typecast(double* arr, int N) {
 
 
 template <typename T>
-std::tuple<double*, int> vector_typecast_inv(std::vector<T> vec) {
+std::tuple<double*, int> vector_typecast_inv(const std::vector<T>& vec) {
     int N = vec.size();
     double* arr = new double[N];
     for (int i=0; i<N; i++){
@@ -124,7 +124,7 @@ std::tuple<double*, int> vector_typecast_inv(std::vector<T> vec) {
 
 // Add two vectors point wise
 template <typename T>
-std::vector<T> add_vectors(std::vector<T> arr1, std::vector<T> arr2){
+std::vector<T> add_vectors(const std::vector<T>& arr1, const std::vector<T>& arr2){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -135,7 +135,7 @@ std::vector<T> add_vectors(std::vector<T> arr1, std::vector<T> arr2){
 }
 
 template <typename T>
-std::vector<std::vector<T>> add_vectors(std::vector<std::vector<T>> arr1, std::vector<std::vector<T>> arr2){
+std::vector<std::vector<T>> add_vectors(const std::vector<std::vector<T>>& arr1, const std::vector<std::vector<T>>& arr2){
     std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
 
     for (int i = 0; i < arr1.size(); i++){
@@ -151,7 +151,7 @@ std::vector<std::vector<T>> add_vectors(std::vector<std::vector<T>> arr1, std::v
 
 // Subtract two vectors point wise (arr1 - arr2)
 template <typename T>
-std::vector<T> subtract_vectors(std::vector<T> arr1, std::vector<T> arr2){
+std::vector<T> subtract_vectors(const std::vector<T>& arr1, const std::vector<T>& arr2){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -165,7 +165,7 @@ std::vector<T> subtract_vectors(std::vector<T> arr1, std::vector<T> arr2){
 // Subtract two vectors point wise (arr1 - arr2)
 // @overload 
 template <typename T>
-std::vector<std::vector<T>> subtract_vectors(std::vector<std::vector<T>> arr1, std::vector<std::vector<T>> arr2){
+std::vector<std::vector<T>> subtract_vectors(const std::vector<std::vector<T>>& arr1, const std::vector<std::vector<T>>& arr2){
     std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
 
     for (int i = 0; i < arr1.size(); i++){
@@ -180,7 +180,7 @@ std::vector<std::vector<T>> subtract_vectors(std::vector<std::vector<T>> arr1, s
 
 // Multiply two vectors point wise
 template <typename T>
-std::vector<T> multiply_vectors(std::vector<T> arr1, std::vector<T> arr2){
+std::vector<T> multiply_vectors(const std::vector<T>& arr1, const std::vector<T>& arr2){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -192,7 +192,7 @@ std::vector<T> multiply_vectors(std::vector<T> arr1, std::vector<T> arr2){
 
 // Multiply scalar to vector point wise
 template <typename T>
-std::vector<T> multiply_vector_scalar(std::vector<T> arr1, T value1){
+std::vector<T> multiply_vector_scalar(const std::vector<T>& arr1, T value1){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -205,7 +205,7 @@ std::vector<T> multiply_vector_scalar(std::vector<T> arr1, T value1){
 
 // Multiply two vectors point wise
 template <typename T>
-std::vector<std::vector<T>> multiply_vectors_2nd_order(std::vector<std::vector<T>> arr1, std::vector<std::vector<T>> arr2){
+std::vector<std::vector<T>> multiply_vectors_2nd_order(const std::vector<std::vector<T>>& arr1, const std::vector<std::vector<T>>& arr2){
     std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
 
     for (int i = 0; i < arr1.size(); i++){
@@ -219,7 +219,7 @@ std::vector<std::vector<T>> multiply_vectors_2nd_order(std::vector<std::vector<T
 
 // Multiply vector-scalar point wise
 template <typename T>
-std::vector<std::vector<T>> multiply_vector_2nd_order_scalar(std::vector<std::vector<T>> arr1, T value1){
+std::vector<std::vector<T>> multiply_vector_2nd_order_scalar(const std::vector<std::vector<T>>& arr1, T value1){
     std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
 
     for (int i = 0; i < arr1.size(); i++){
@@ -234,7 +234,7 @@ std::vector<std::vector<T>> multiply_vector_2nd_order_scalar(std::vector<std::ve
 
 // Reduce vector of 2nd order to vector of 1st order by adding across the 1st axis
 template <typename T>
-std::vector<T> vector_reduction_by_sum1(std::vector<std::vector<T>> arr){
+std::vector<T> vector_reduction_by_sum1(const std::vector<std::vector<T>>& arr){
     int grid_size = arr.size();
     int n_species = arr[0].size();
     
@@ -251,7 +251,7 @@ std::vector<T> vector_reduction_by_sum1(std::vector<std::vector<T>> arr){
 
 // Raise each element of the vector to the passed value
 template <typename T>
-std::vector<T> vector_float_power(std::vector<T> arr1, T value1){
+std::vector<T> vector_float_power(const std::vector<T>& arr1, T value1){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -264,7 +264,7 @@ std::vector<T> vector_float_power(std::vector<T> arr1, T value1){
 
 // Divide two vectors point wise
 template <typename T>
-std::vector<T> divide_vectors(std::vector<T> arr1, std::vector<T> arr2){
+std::vector<T> divide_vectors(const std::vector<T>& arr1, const std::vector<T>& arr2){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -276,7 +276,7 @@ std::vector<T> divide_vectors(std::vector<T> arr1, std::vector<T> arr2){
 
 // Divide vector point wise by a scalar
 template <typename T>
-std::vector<T> divide_vector_scalar(std::vector<T> arr1, T value1){
+std::vector<T> divide_vector_scalar(const std::vector<T>& arr1, T value1){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -289,7 +289,7 @@ std::vector<T> divide_vector_scalar(std::vector<T> arr1, T value1){
 
 // Divide a scalar by vector point wise
 template <typename T>
-std::vector<T> divide_scalar_vector(T value1, std::vector<T> arr1){
+std::vector<T> divide_scalar_vector(T value1, const std::vector<T>& arr1){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -306,7 +306,7 @@ std::vector<T> divide_scalar_vector(T value1, std::vector<T> arr1){
 
 // Divide two vectors point wise
 template <typename T>
-std::vector<std::vector<T>> divide_vectors_2nd_order(std::vector<std::vector<T>> arr1, std::vector<std::vector<T>> arr2){
+std::vector<std::vector<T>> divide_vectors_2nd_order(const std::vector<std::vector<T>>& arr1, const std::vector<std::vector<T>>& arr2){
     std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
 
     for (int i = 0; i < arr1.size(); i++){
@@ -319,8 +319,38 @@ std::vector<std::vector<T>> divide_vectors_2nd_order(std::vector<std::vector<T>>
 }
 
 
+// Divide two vectors point wise
 template <typename T>
-std::vector<std::vector<T>> tiling_vector(std::vector<T> arr, int n_species){
+std::vector<std::vector<T>> divide_vector_2nd_order_1st_order(const std::vector<std::vector<T>>& arr1, const std::vector<T>& arr2){
+    int grid_size = arr1.size();
+    int n_species = arr1[0].size();
+    
+    std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
+
+    for (int i = 0; i < grid_size; i++){
+        for (int j = 0; j < n_species; j++){
+            res[i][j] = arr1[i][j] / arr2[i];
+        }
+    }
+
+    return res;
+}
+
+// returns the selected column number
+template <typename T>
+std::vector<T> column_returner(const std::vector<std::vector<T>>& arr, int j){
+    std::vector<T> res(arr.size());
+
+    for (int i = 0; i < arr.size(); i++){
+        res[i] = arr[i][j];
+        }
+
+    return res;
+}
+
+
+template <typename T>
+std::vector<std::vector<T>> tiling_vector(const std::vector<T>& arr, int n_species){
     int grid_size = arr.size();
     std::vector<std::vector<T>> res(grid_size, std::vector<T>(n_species));
     
@@ -335,7 +365,7 @@ std::vector<std::vector<T>> tiling_vector(std::vector<T> arr, int n_species){
 
 
 template <typename T>
-std::vector<T> vector_value_minimum_limiter(std::vector<T> arr1, T value1){
+std::vector<T> vector_value_minimum_limiter(const std::vector<T>& arr1, T value1){
     std::vector<T> res(arr1.size());
 
     for (int i = 0; i < arr1.size(); i++){
@@ -353,7 +383,7 @@ std::vector<T> vector_value_minimum_limiter(std::vector<T> arr1, T value1){
 
 // @overload
 template <typename T>
-std::vector<std::vector<T>> vector_value_minimum_limiter(std::vector<std::vector<T>> arr1, T value1){
+std::vector<std::vector<T>> vector_value_minimum_limiter(const std::vector<std::vector<T>>& arr1, T value1){
     std::vector<std::vector<T>> res(arr1.size(), std::vector<T>(arr1[0].size()));
 
     for (int i = 0; i < arr1.size(); i++){
@@ -385,7 +415,7 @@ void print_array(const T* arr, size_t size) {
 }
 
 template <typename T>
-void print_vector(std::vector<T> vec) {
+void print_vector(const std::vector<T>& vec) {
     std::cout << "[ ";
     for (int i = 0; i < vec.size(); i++){
         std::cout << vec[i] << " ";
@@ -394,7 +424,7 @@ void print_vector(std::vector<T> vec) {
 }
 
 template <typename T>
-void print_vector(std::vector<std::vector<T>> vec) {
+void print_vector(const std::vector<std::vector<T>>& vec) {
     std::cout << "[ ";
     for (int i = 0; i < vec.size(); i++){
         for (int j=0; j<vec[0].size(); j++){
@@ -407,7 +437,7 @@ void print_vector(std::vector<std::vector<T>> vec) {
 
 
 template <typename T>
-void file_writer_vector(T time, std::vector<T> vec1, std::string fileName, int printflag1){
+void file_writer_vector(T time, const std::vector<T>& vec1, std::string fileName, int printflag1){
     std::ofstream output_file(fileName, std::ios::app);
     
     if (output_file.is_open()) {
@@ -419,7 +449,7 @@ void file_writer_vector(T time, std::vector<T> vec1, std::string fileName, int p
         output_file.close();
 
         if (printflag1 == 1){
-            std::cout << "File written successfully at timestep: " << time << "\n";
+            std::cout << std::unitbuf << "File written successfully at timestep: " << time << "\n";
         }
     } else {
         std::cerr << "Error opening file for writing.\n";
@@ -436,32 +466,6 @@ bool readAndParseJson(const std::string& filename, JsonData& data);
 std::string make_filename(std::string folder, std::string type, std::string run_num);
 
 void clear_file(const std::string& fileName);
-
-// // --- Helper Functions ---
-
-// // Template function for power, equivalent to np.float_power
-// template<typename T>
-// T float_power(T base, T exp) {
-//     return std::pow(base, exp);
-// }
-
-// // Template function for element-wise maximum of an array and a scalar, equivalent to np.maximum(arr, value)
-// template<typename T, size_t N>
-// std::array<T, N> array_maximum(const std::array<T, N>& arr, T value) {
-//     std::array<T, N> result;
-//     for (size_t i = 0; i < N; ++i) {
-//         result[i] = std::max(arr[i], value);
-//     }
-//     return result;
-// }
-
-// // Template function to sum elements of a std::array, equivalent to np.sum(arr)
-// template<typename T, size_t N>
-// T array_sum(const std::array<T, N>& arr) {
-//     // Start summation with 0.0 of type T
-//     return std::accumulate(arr.begin(), arr.end(), static_cast<T>(0.0));
-// }
-
 
 
 #endif // UTILS_SOLVER_H

@@ -149,6 +149,17 @@ void FluidSolver1DFunc(JsonData config) {
 
         std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = solver.solver_func(rho_new, rho_u_new, rho_e0_new, rho_ys_new);
         std::vector<Real> u_values = divide_vectors(rho_u_new, rho_new);
+        std::vector<std::vector<Real>> ys_values = divide_vector_2nd_order_1st_order<Real>(rho_ys_new, rho_new);
+        std::vector<Real> h2_vals = column_returner(ys_values, 0);
+        std::vector<Real> h_vals = column_returner(ys_values, 1);
+        std::vector<Real> o_vals = column_returner(ys_values, 2);
+        std::vector<Real> o2_vals = column_returner(ys_values, 3);
+        std::vector<Real> oh_vals = column_returner(ys_values, 4);
+        std::vector<Real> h2o_vals = column_returner(ys_values, 5);
+        std::vector<Real> ho2_vals = column_returner(ys_values, 6);
+        std::vector<Real> h2o2_vals = column_returner(ys_values, 7);
+        std::vector<Real> ar_vals = column_returner(ys_values, 8);
+        std::vector<Real> n2_vals = column_returner(ys_values, 9);
 
         time_checkpoints_end.push_back(std::chrono::steady_clock::now());
        

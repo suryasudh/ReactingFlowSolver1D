@@ -204,7 +204,7 @@ T bds2_second_derivative(T dx, T f_il3, T f_il2, T f_il1, T f_i0){
 
 // Upwind scheme based first derivative
 template <typename T>
-std::vector<T> arr_upwind_first_derivative_periodic(std::vector<T> arr1, std::vector<T> u, T dx){
+std::vector<T> arr_upwind_first_derivative_periodic(const std::vector<T>& arr1, const std::vector<T>& u, T dx){
     std::vector<T> darr_dx(arr1.size());
     
     for (int i = 0; i < arr1.size(); i++){
@@ -229,7 +229,7 @@ std::vector<T> arr_upwind_first_derivative_periodic(std::vector<T> arr1, std::ve
 
 // First derivative using 2nd order central difference scheme
 template <typename T>
-std::vector<T> arr_first_derivative_cds_periodic(std::vector<T> arr, T dx){
+std::vector<T> arr_first_derivative_cds_periodic(const std::vector<T>& arr, T dx){
     std::vector<T> du_dx(arr.size());
 
     for (int i = 0; i < arr.size(); i++){
@@ -250,7 +250,7 @@ std::vector<T> arr_first_derivative_cds_periodic(std::vector<T> arr, T dx){
 // @overload 
 // this is for vector<vector<T>>
 template <typename T>
-std::vector<std::vector <T>> arr_first_derivative_cds_periodic(std::vector<std::vector <T>> arr, T dx){
+std::vector<std::vector <T>> arr_first_derivative_cds_periodic(const std::vector<std::vector <T>>& arr, T dx){
     int grid_size = arr.size();
     int n_species = arr[0].size();
     

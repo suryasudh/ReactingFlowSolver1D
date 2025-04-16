@@ -15,10 +15,10 @@ const std::string gas_composition(std::string gas_name){
 
 /*
 Creates the required initial conditions
-// u(x, 0) = sin(2 pi (x/L)) * 0.01
+// u(x, 0) = 0
 */
 template <typename T>
-std::vector<T> initial_cond_on_u_case0(std::vector<T> x, T domain_length){
+std::vector<T> initial_cond_on_u_case0(const std::vector<T>& x, T domain_length){
     int grid_size = x.size() - 1;
     
     std::vector<double> u(grid_size+1);
@@ -36,7 +36,7 @@ Creates the required initial conditions
 // u(x, 0) = sin(2 pi (x/L)) * 0.01
 */
 template <typename T>
-std::vector<T> initial_cond_on_u_case1(std::vector<T> x, T domain_length){
+std::vector<T> initial_cond_on_u_case1(const std::vector<T>& x, T domain_length){
     int grid_size = x.size();
     
     std::vector<double> u(grid_size);

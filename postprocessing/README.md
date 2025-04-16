@@ -4,5 +4,8 @@ Specifically, it might contain files like <br>
 the python scripts to create plots of analysis <br>
 which are saved to an outputs folder.
 
-Command to run the solver
+Command to run the solver with memory analysis
+/usr/bin/time -v ./main01.cxx 2>&1 | tee -a "../logfiles/log_output_$(date '+%Y_%m_%d_%H_%M_%S').txt"
+
+Command to run the solver without memory analysis
 ./main01.cxx | tee -a "../logfiles/log_output_$(date '+%Y_%m_%d_%H_%M_%S').txt"

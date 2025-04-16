@@ -20,10 +20,10 @@ template <typename T>
 std::tuple<int, int, std::vector<T>, std::vector<T>, std::vector<T>, 
 std::vector<T>, std::vector<T>, std::vector<T>, std::vector<T>,
 std::vector<T>, std::vector<std::vector<T>>, std::vector<std::vector<T>>, std::vector<std::vector<T>>,
-std::vector<std::vector<T>>, std::vector<std::vector<T>>> setStateGetProps(std::vector<T> rho_old, 
-                                                            std::vector<T> rho_u_old, 
-                                                            std::vector<T> rho_e0_old, 
-                                                            std::vector<std::vector<T>> rho_ys_old, 
+std::vector<std::vector<T>>, std::vector<std::vector<T>>> setStateGetProps(const std::vector<T>& rho_old, 
+                                                            const std::vector<T>& rho_u_old, 
+                                                            const std::vector<T>& rho_e0_old, 
+                                                            const std::vector<std::vector<T>>& rho_ys_old, 
                                                             std::shared_ptr<Cantera::Solution> gas_obj1){
     
     
@@ -99,9 +99,9 @@ std::vector<std::vector<T>>, std::vector<std::vector<T>>> setStateGetProps(std::
 
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> conservation_equations_dt(T dx1, std::vector<T> rho_old, 
-        std::vector<T> rho_u_old, std::vector<T> rho_e0_old, 
-        std::vector<std::vector<T>> rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj1){
+    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> conservation_equations_dt(T dx1, const std::vector<T>& rho_old, 
+        const std::vector<T>& rho_u_old, const std::vector<T>& rho_e0_old, 
+        const std::vector<std::vector<T>>& rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj1){
 
     // Setting the properties
     int n_nodes, n_species1;
@@ -201,8 +201,8 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 // Implementing the Runge-Kutta 1st Order accurate method
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeRK1(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old, 
-    std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj){
+    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeRK1(T dt_val, T dx_val, const std::vector<T>& rho_old, const std::vector<T>& rho_u_old, 
+        const std::vector<T>& rho_e0_old, const std::vector<std::vector<T>>& rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj){
 
     std::vector<T> _rho_new;
     std::vector<T> _rho_u_new;
@@ -240,8 +240,8 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 // Implementing the Runge-Kutta 2nd Order accurate method
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeRK2(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old, 
-    std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj){
+    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeRK2(T dt_val, T dx_val, const std::vector<T>& rho_old, const std::vector<T>& rho_u_old, 
+        const std::vector<T>& rho_e0_old, const std::vector<std::vector<T>>& rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj){
 
     std::vector<T> _rho_new;
     std::vector<T> _rho_u_new;
@@ -307,8 +307,8 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 // Implementing the Runge-Kutta 3rd Order accurate method
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeRK3(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old, 
-    std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj){
+    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeRK3(T dt_val, T dx_val, const std::vector<T>& rho_old, const std::vector<T>& rho_u_old, 
+        const std::vector<T>& rho_e0_old, const std::vector<std::vector<T>>& rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj){
 
     std::vector<T> _rho_new;
     std::vector<T> _rho_u_new;
@@ -410,8 +410,8 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 // Implementing the Runge-Kutta 4th Order accurate method
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeRK4(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old, 
-    std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj){
+    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeRK4(T dt_val, T dx_val, const std::vector<T>& rho_old, const std::vector<T>& rho_u_old, 
+        const std::vector<T>& rho_e0_old, const std::vector<std::vector<T>>& rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj){
 
     std::vector<T> _rho_new;
     std::vector<T> _rho_u_new;

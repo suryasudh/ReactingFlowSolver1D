@@ -131,8 +131,8 @@ class FluidSolver1D {
 
     
         std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-            std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> solver_func(std::vector<T> q00_rho, 
-                std::vector<T> q01_rho_u, std::vector<T> q02_rho_e0, std::vector<std::vector<T>> q03_rho_ys) {
+            std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> solver_func(const std::vector<T>& q00_rho, 
+                const std::vector<T>& q01_rho_u, const std::vector<T>& q02_rho_e0, const std::vector<std::vector<T>>& q03_rho_ys) {
             current_iteration += 1;
 
             std::vector<T> rho_old = q00_rho;

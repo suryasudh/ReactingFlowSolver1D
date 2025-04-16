@@ -1,0 +1,31 @@
+configuration.json file parsed successfully!
+*********************************************************
+The options chosen for the run are:
+*********************************************************
+data_folder01:      ../data/cantera_files/
+run_num:            022
+float_precision:    32
+boundary_mode:      1
+init_temp:          300
+init_pres:          101325
+Nx:                 128
+domain_length:      1
+timestep:           5e-09
+n_iters_total:      4000
+n_iters_save:       1000
+scheme_to_use:      RK4
+case # of problem:  1
+*********************************************************
+Periodic boundary condition chosen 
+*********************************************************
+File cleared: ../postprocessing/output_sol_u_022.csv
+File cleared: ../postprocessing/output_sol_dens_022.csv
+File cleared: ../postprocessing/output_sol_temp_022.csv
+File cleared: ../postprocessing/output_sol_pres_022.csv
+File written successfully at timestep: 0
+File written successfully at timestep: 5e-06
+File written successfully at timestep: 1e-05
+File written successfully at timestep: 1.5e-05
+Running time (without I/O time) is: 5.01937 seconds
+so far, so good
+Time difference (sec) = 5.03532
