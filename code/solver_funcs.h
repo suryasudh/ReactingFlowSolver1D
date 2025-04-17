@@ -9,6 +9,7 @@
 #include <limits>       // For std::numeric_limits
 #include <tuple>        // For returning multiple values from functions
 #include "utils_solver.h"
+#include "log_heap.h"
 #include "derivatives.h"
 #include <cantera/core.h>
 #include "cantera/base/AnyMap.h"
@@ -60,7 +61,7 @@ std::vector<std::vector<T>>, std::vector<std::vector<T>>> setStateGetProps(const
         double v_value = static_cast<double>(sp_vol_old[i]);
         gas_obj1->thermo()->setMassFractions(_ys_kth_node_old_c);
         gas_obj1->thermo()->setState_UV(u_value, v_value, 1.0E-9);
-        
+        delete[] _ys_kth_node_old_c;
         
         temperature_old[i] = static_cast<T>(gas_obj1->thermo()->temperature());
         pressure_old[i] = static_cast<T>(gas_obj1->thermo()->pressure());
@@ -73,6 +74,7 @@ std::vector<std::vector<T>>, std::vector<std::vector<T>>> setStateGetProps(const
         double* yMoleFractions_double_c = new double[n_species1];
         gas_obj1->thermo()->getMoleFractions(yMoleFractions_double_c);
         mole_fractions_old[i] = vector_typecast<T>(yMoleFractions_double_c, n_species1);
+        delete[] yMoleFractions_double_c;
 
         std::vector<double> yMolecularWeights_double_c = gas_obj1->thermo()->molecularWeights();
         mw_species_old[i] = vector_vector_typecast<T>(yMolecularWeights_double_c);
@@ -80,14 +82,17 @@ std::vector<std::vector<T>>, std::vector<std::vector<T>>> setStateGetProps(const
         double* yEnthalpyRT_double_c = new double[n_species1];
         gas_obj1->thermo()->getEnthalpy_RT(yEnthalpyRT_double_c);
         enthalpy_k_old[i] = vector_typecast<T>(yEnthalpyRT_double_c, n_species1);
-        
+        delete[] yEnthalpyRT_double_c;
+
         double* yMixDiffCoeffs_double_c = new double[n_species1];
         gas_obj1->transport()->getMixDiffCoeffsMass(yMixDiffCoeffs_double_c);
         mix_diff_coeffs_old[i] = vector_typecast<T>(yMixDiffCoeffs_double_c, n_species1);
+        delete[] yMixDiffCoeffs_double_c;
 
         double* yProductionRates_double_c = new double[n_species1];
         gas_obj1->kinetics()->getNetProductionRates(yProductionRates_double_c);
         production_rates_old[i] = vector_typecast<T>(yProductionRates_double_c, n_species1);
+        delete[] yProductionRates_double_c;
     }
 
     return std::make_tuple(n_nodes, n_species1, u_old, e_int_old, sp_vol_old, 
@@ -539,10 +544,48 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 // Implementing the Adams-Bashforth method
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeAB2(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old, 
-    std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj,
-    std::tuple<std::vector<std::vector<T>>, std::vector<std::vector<T>>, 
-    std::vector<std::vector<T>>, std::vector<std::vector<std::vector<T>>>> history_1st_five_steps){
+    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeAB2(T dt_val, T dx_val, std::shared_ptr<Cantera::Solution> gas_obj,
+    const std::tuple<std::list<std::vector<T>>, std::list<std::vector<T>>, 
+    std::list<std::vector<T>>, std::list<std::vector<std::vector<T>>>>& history_last_five_steps){
+
+    std::list<std::vector<T>> rho_old_history = std::get<0>(history_last_five_steps);
+    std::list<std::vector<T>> rho_u_old_history = std::get<1>(history_last_five_steps);
+    std::list<std::vector<T>> rho_e0_old_history = std::get<2>(history_last_five_steps);
+    std::list<std::vector<std::vector<T>>> rho_ys_old_history = std::get<3>(history_last_five_steps);
+    
+    std::vector<T> rho_old = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+    
+    std::vector<T> rho_old_1 = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old_1 = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old_1 = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old_1 = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+
+
+    std::vector<T> rho_k1;
+    std::vector<T> rho_u_k1;
+    std::vector<T> rho_e0_k1;
+    std::vector<std::vector<T>> rho_ys_k1;
+    std::vector<T> temperature_old_1;
+    std::vector<T> pressure_old_1;
+
+    std::tie(rho_k1, rho_u_k1, rho_e0_k1, rho_ys_k1, temperature_old_1, pressure_old_1) = conservation_equations_dt(dx_val, rho_old, rho_u_old, rho_e0_old, rho_ys_old, gas_obj);
+
+    
+
+
+
+    
     
     std::vector<T> _rho_new;
     std::vector<T> _rho_u_new;
@@ -561,11 +604,49 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 // Implementing the Adams-Bashforth method
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeAB3(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old, 
-    std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj,
-    std::tuple<std::vector<std::vector<T>>, std::vector<std::vector<T>>, 
-    std::vector<std::vector<T>>, std::vector<std::vector<std::vector<T>>>> history_1st_five_steps){
+    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeAB3(T dt_val, T dx_val, std::shared_ptr<Cantera::Solution> gas_obj,
+    const std::tuple<std::list<std::vector<T>>, std::list<std::vector<T>>, 
+    std::list<std::vector<T>>, std::list<std::vector<std::vector<T>>>>& history_last_five_steps){
+
+    std::list<std::vector<T>> rho_old_history = std::get<0>(history_last_five_steps);
+    std::list<std::vector<T>> rho_u_old_history = std::get<1>(history_last_five_steps);
+    std::list<std::vector<T>> rho_e0_old_history = std::get<2>(history_last_five_steps);
+    std::list<std::vector<std::vector<T>>> rho_ys_old_history = std::get<3>(history_last_five_steps);
     
+    std::vector<T> rho_old = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+    
+    std::vector<T> rho_old_1 = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old_1 = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old_1 = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old_1 = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+
+    std::vector<T> rho_old_2 = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old_2 = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old_2 = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old_2 = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+
+
+
+
+
+    
+
+
     std::vector<T> _rho_new;
     std::vector<T> _rho_u_new;
     std::vector<T> _rho_e0_new;
@@ -583,10 +664,54 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 // Implementing the Adams-Bashforth method
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeAB4(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old, 
-    std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old, std::shared_ptr<Cantera::Solution> gas_obj,
-    std::tuple<std::vector<std::vector<T>>, std::vector<std::vector<T>>, 
-    std::vector<std::vector<T>>, std::vector<std::vector<std::vector<T>>>> history_1st_five_steps){
+    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> schemeAB4(T dt_val, T dx_val, std::shared_ptr<Cantera::Solution> gas_obj,
+    const std::tuple<std::list<std::vector<T>>, std::list<std::vector<T>>, 
+    std::list<std::vector<T>>, std::list<std::vector<std::vector<T>>>>& history_last_five_steps){
+
+    std::list<std::vector<T>> rho_old_history = std::get<0>(history_last_five_steps);
+    std::list<std::vector<T>> rho_u_old_history = std::get<1>(history_last_five_steps);
+    std::list<std::vector<T>> rho_e0_old_history = std::get<2>(history_last_five_steps);
+    std::list<std::vector<std::vector<T>>> rho_ys_old_history = std::get<3>(history_last_five_steps);
+    
+    std::vector<T> rho_old = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+    
+    std::vector<T> rho_old_1 = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old_1 = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old_1 = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old_1 = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+
+    std::vector<T> rho_old_2 = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old_2 = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old_2 = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old_2 = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+
+    std::vector<T> rho_old_3 = rho_old_history.back();
+    rho_old_history.pop_back();
+    std::vector<T> rho_u_old_3 = rho_u_old_history.back();
+    rho_u_old_history.pop_back();
+    std::vector<T> rho_e0_old_3 = rho_e0_old_history.back();
+    rho_e0_old_history.pop_back();
+    std::vector<std::vector<T>> rho_ys_old_3 = rho_ys_old_history.back();
+    rho_ys_old_history.pop_back();
+
+
+
+
     
     std::vector<T> _rho_new;
     std::vector<T> _rho_u_new;
@@ -608,11 +733,13 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 
 template <typename T>
 std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
-    std::vector<std::vector<T>>, std::vector<T>, std::vector<T>> time_stepper(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old,
-                                                                                std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old,
-                                                                                std::shared_ptr<Cantera::Solution> gas_obj, std::string scheme, int current_iteration,
-                                                                                std::tuple<std::vector<std::vector<T>>, std::vector<std::vector<T>>, 
-                                                                                std::vector<std::vector<T>>, std::vector<std::vector<std::vector<T>>>> history_1st_five_steps){
+    std::vector<std::vector<T>>, std::vector<T>, 
+    std::vector<T>> time_stepper(T dt_val, T dx_val, std::vector<T> rho_old, std::vector<T> rho_u_old,
+    std::vector<T> rho_e0_old, std::vector<std::vector<T>> rho_ys_old,
+    std::shared_ptr<Cantera::Solution> gas_obj, std::string scheme, int current_iteration,
+    std::tuple<std::list<std::vector<T>>, std::list<std::vector<T>>, 
+    std::list<std::vector<T>>, std::list<std::vector<std::vector<T>>>> history_last_five_steps){
+    
     std::vector<T> rho_new;
     std::vector<T> rho_u_new;
     std::vector<T> rho_e0_new;
@@ -647,8 +774,7 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
                     rho_e0_old, rho_ys_old, gas_obj); 
         } else {
             std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, 
-                temperature_old, pressure_old) = schemeAB2(dt_val, dx_val, rho_old, rho_u_old, 
-                    rho_e0_old, rho_ys_old, gas_obj, history_1st_five_steps); 
+                temperature_old, pressure_old) = schemeAB2(dt_val, dx_val, gas_obj, history_last_five_steps); 
         }
 
     } else if (scheme == "AB3"){
@@ -658,8 +784,7 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
                     rho_e0_old, rho_ys_old, gas_obj); 
         } else {
             std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, 
-                temperature_old, pressure_old) = schemeAB3(dt_val, dx_val, rho_old, rho_u_old, 
-                    rho_e0_old, rho_ys_old, gas_obj, history_1st_five_steps); 
+                temperature_old, pressure_old) = schemeAB3(dt_val, dx_val, gas_obj, history_last_five_steps); 
         }
 
     } else if (scheme == "AB4"){
@@ -669,8 +794,7 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
                     rho_e0_old, rho_ys_old, gas_obj); 
         } else {
             std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, 
-                temperature_old, pressure_old) = schemeAB4(dt_val, dx_val, rho_old, rho_u_old, 
-                    rho_e0_old, rho_ys_old, gas_obj, history_1st_five_steps); 
+                temperature_old, pressure_old) = schemeAB4(dt_val, dx_val, gas_obj, history_last_five_steps); 
         }
 
     } else {
@@ -678,7 +802,9 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
         throw std::invalid_argument("Invalid scheme specified. Choose 'explicit_euler' or 'rk2'.");
     }
     
-
+    if (current_iteration % 1000 == 0){
+        log_heap();
+    }
     return std::make_tuple(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old);              
 }
 

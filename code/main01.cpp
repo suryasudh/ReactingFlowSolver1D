@@ -1,8 +1,8 @@
 // main.cpp
 #include "cantera/core.h"
 #include "utils_solver.h"
+#include "log_heap.h"
 #include "derivatives.h"
-#include "schemes.h"
 #include "FluidSolver1D.h"
 #include <iostream>
 #include <chrono>

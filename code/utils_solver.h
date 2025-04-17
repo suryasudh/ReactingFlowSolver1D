@@ -7,6 +7,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <list>
 #include <array>
 #include <numeric> 
 #include <cmath>
@@ -63,6 +64,8 @@ T* create_initialized_array(int size, U value) {
     
     return arr;
 }
+
+
 
 template <typename T>
 std::vector<T> linspace_utils(T start, T end, std::size_t num) {
@@ -133,6 +136,12 @@ std::vector<T> add_vectors(const std::vector<T>& arr1, const std::vector<T>& arr
 
     return res;
 }
+
+
+
+
+
+
 
 template <typename T>
 std::vector<std::vector<T>> add_vectors(const std::vector<std::vector<T>>& arr1, const std::vector<std::vector<T>>& arr2){

@@ -4,7 +4,6 @@
 #include "derivatives.h"
 #include "initial_conds.h"
 #include "solver_funcs.h"
-#include "schemes.h"
 #include <stdexcept>
 #include <type_traits> 
 
@@ -50,10 +49,13 @@ class FluidSolver1D {
         std::string scheme_str;
         int current_iteration = 0;
 
-        std::vector<std::vector<T>> rho_old_history;
-        std::vector<std::vector<T>> rho_u_old_history;
-        std::vector<std::vector<T>> rho_e0_old_history;
-        std::vector<std::vector<std::vector<T>>> rho_ys_old_history;
+        std::list<std::vector<T>> rho_old_history;
+        std::list<std::vector<T>> rho_u_old_history;
+        std::list<std::vector<T>> rho_e0_old_history;
+        std::list<std::vector<std::vector<T>>> rho_ys_old_history;
+
+        std::tuple<std::list<std::vector<T>>, std::list<std::vector<T>>, 
+        std::list<std::vector<T>>, std::list<std::vector<std::vector<T>>>> history_last_five_steps;
 
         FluidSolver1D(std::shared_ptr<Cantera::Solution>  gas_passed, T T0_passed, T P0_passed, 
                         std::string X0_passed, T L_passed, std::size_t Nx_passed, T dt_passed,
@@ -75,7 +77,6 @@ class FluidSolver1D {
             dx = L / static_cast<T>(Nx);
 
             x = linspace_utils(static_cast<T>(0.0), L, Nx);  
-            // print_vector(x);  
             
             scheme_str = scheme_str_passed;
             boundary_mode = boundary_mode_passed;
@@ -147,12 +148,21 @@ class FluidSolver1D {
             std::vector<T> temperature_old;
             std::vector<T> pressure_old;
 
-            std::tuple<std::vector<std::vector<T>>, std::vector<std::vector<T>>, 
-            std::vector<std::vector<T>>, std::vector<std::vector<std::vector<T>>>> history_1st_five_steps = std::make_tuple(rho_old_history, rho_u_old_history, rho_e0_old_history, rho_ys_old_history);
-            std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = time_stepper(dt, dx, rho_old, rho_u_old, rho_e0_old, rho_ys_old, gas, scheme_str, current_iteration, history_1st_five_steps);
+            history_last_five_steps = std::make_tuple(rho_old_history, rho_u_old_history, rho_e0_old_history, rho_ys_old_history);
+            std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = time_stepper(dt, dx, rho_old, rho_u_old, rho_e0_old, rho_ys_old, gas, scheme_str, current_iteration, history_last_five_steps);
 
             
             if (current_iteration < 5){
+                rho_old_history.push_back(rho_new);
+                rho_u_old_history.push_back(rho_u_new);
+                rho_e0_old_history.push_back(rho_e0_new);
+                rho_ys_old_history.push_back(rho_ys_new);
+            } else {
+                rho_old_history.pop_front();
+                rho_u_old_history.pop_front();
+                rho_e0_old_history.pop_front();
+                rho_ys_old_history.pop_front();
+
                 rho_old_history.push_back(rho_new);
                 rho_u_old_history.push_back(rho_u_new);
                 rho_e0_old_history.push_back(rho_e0_new);
