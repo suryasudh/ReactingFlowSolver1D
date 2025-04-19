@@ -1,20 +1,20 @@
 {
     "data_folder01": "../data/cantera_files/",
     "outputs_folder01": "/media/ssudhakar/DATA_10TB/data_solver/",
-    "run_num": "001",
+    "run_num": "111",
     "float_precision": 64,
     "boundary_mode" : 1,
     "left_boundary_dirichlet" : 0.0,
     "right_boundary_dirichlet" : 0.0,
     "left_boundary_neumann" : 0.0,
     "right_boundary_neumann" : 0.0,
-    "init_temp" : 300.0,
+    "init_temp" : 1200.0,
     "init_pres" : 101325.0,
     "Nx": 128,
-    "domain_length" : 1.0,
-    "timestep" : 0.000000005,
-    "n_iters_total" : 4000,
-    "n_iters_save" : 1000,
-    "scheme_to_use" : "RK3",
-    "case_problem" : 1
+    "domain_length" : 5.0,
+    "timestep" : 0.00000002,
+    "n_iters_total" : 50000,
+    "n_iters_save" : 100,
+    "scheme_to_use" : "RK1",
+    "case_problem" : 3
 }

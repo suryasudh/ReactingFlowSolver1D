@@ -79,6 +79,18 @@ std::vector<T> linspace_utils(T start, T end, std::size_t num) {
     return result;
 }
 
+// Create an array
+template <typename T>
+std::vector<T> create_initial_valued_vector(const std::vector<T>& arr1, T value1){
+    std::vector<T> arr2(arr1.size());
+    for (int i=0; i<arr1.size(); i++){
+        arr2[i] = value1;
+    }
+
+    return arr2;
+}
+
+
 template <typename T>
 std::vector<T> vector_vector_typecast(const std::vector<double>& arr1){
     std::vector<T> arr2(arr1.size());

@@ -14,7 +14,7 @@ Command to run the solver with memory analysis <br>
 <code> /usr/bin/time -v ./main01.cxx 2>&1 | tee -a "/media/ssudhakar/DATA_10TB/data_solver/logs/log_output_$(date '+%Y_%m_%d_%H_%M_%S').txt" </code>
 
 Command to run the solver without memory analysis <br>
-<code> ./main01.cxx | tee -a "../logfiles/log_output_$(date '+%Y_%m_%d_%H_%M_%S').txt" </code>
+<code> ./main01.cxx | tee -a "/media/ssudhakar/DATA_10TB/data_solver/logs/log_output_$(date '+%Y_%m_%d_%H_%M_%S').txt" </code>
 
 Command to run the solver with memory analysis <br>
 <code> valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./main01.cxx 2>&1 | tee -a "../logfiles/log_output_$(date '+%Y_%m_%d_%H_%M_%S').txt" </code>

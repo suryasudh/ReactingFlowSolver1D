@@ -6,13 +6,14 @@
 #include "FluidSolver1D.h"
 #include <iostream>
 #include <chrono>
+#include <stdexcept>
 
 using namespace Cantera;
 
 
 template <typename T>
 std::shared_ptr<Cantera::Solution> gas_h2o2_creator(T temp, T pressure, std::string mole_fractions){
-    std::shared_ptr<Cantera::Solution> gas_h2o2 = newSolution("h2o2.yaml");
+    std::shared_ptr<Cantera::Solution> gas_h2o2 = newSolution("../data/cantera_files/h2o2.yaml", "ohmech");
     gas_h2o2->thermo()->setState_TPX(temp, pressure, mole_fractions);
 
     return gas_h2o2;
@@ -109,6 +110,7 @@ void FluidSolver1DFunc(JsonData config) {
     Real P0 = static_cast<Real>(init_pressure);
     const std::string air_comp = gas_composition("air");
     const std::string fuel_comp = gas_composition("fuel");
+    const std::string fuel_comp2 = gas_composition("fuel2");
     const std::string sample = gas_composition("other");
 
 
@@ -117,7 +119,16 @@ void FluidSolver1DFunc(JsonData config) {
     // ******************************************************************
 
     std::shared_ptr<Cantera::Solution> gas_h2o2;
-    gas_h2o2 = gas_h2o2_creator(T0, P0, fuel_comp);
+    if (case1 == 1){
+        gas_h2o2 = gas_h2o2_creator(T0, P0, fuel_comp);
+    } else if (case1 == 3){
+        gas_h2o2 = gas_h2o2_creator(T0, P0, fuel_comp2);
+    } else if (case1 == 2) {
+        gas_h2o2 = gas_h2o2_creator(T0, P0, fuel_comp);
+    } else {
+        throw std::invalid_argument("Invalid case selected: " + std::to_string(case1) + ". Only case 1, 2, 3 available");
+    }
+    
 
     FluidSolver1D solver = FluidSolver1D<Real>(gas_h2o2, T0, P0, fuel_comp, domain_length, Nx, timestep,
                                                 scheme_to_use, boundary_mode, left_boundary_dirichlet, right_boundary_dirichlet,
@@ -131,7 +142,7 @@ void FluidSolver1DFunc(JsonData config) {
 
     time_checkpoints_end.push_back(std::chrono::steady_clock::now());
     
-    std::vector<std::string> variables_to_save = {"u", "dens", "temp", "pres"};
+    std::vector<std::string> variables_to_save = {"u", "dens", "temp", "pres", "h2", "h", "o", "o2", "oh", "h2o", "ho2", "h2o2", "ar", "n2"};
     std::vector<std::string> filenames(0);
     
     for (string variable : variables_to_save) {
@@ -161,14 +172,26 @@ void FluidSolver1DFunc(JsonData config) {
         std::vector<Real> ar_vals = column_returner(ys_values, 8);
         std::vector<Real> n2_vals = column_returner(ys_values, 9);
 
+        // print_vector(u_values);
+        // print_vector(temperature_old);
+
         time_checkpoints_end.push_back(std::chrono::steady_clock::now());
-       
 
         if (i % n_iters_save == 0){
             file_writer_vector(time_keeper, u_values, filenames[0], 0);
             file_writer_vector(time_keeper, rho_new, filenames[1], 0);
             file_writer_vector(time_keeper, temperature_old, filenames[2], 0);
             file_writer_vector(time_keeper, pressure_old, filenames[3], 1);
+            file_writer_vector(time_keeper, h2_vals, filenames[4], 0);
+            file_writer_vector(time_keeper, h_vals, filenames[5], 0);
+            file_writer_vector(time_keeper, o_vals, filenames[6], 0);
+            file_writer_vector(time_keeper, o2_vals, filenames[7], 0);
+            file_writer_vector(time_keeper, oh_vals, filenames[8], 0);
+            file_writer_vector(time_keeper, h2o_vals, filenames[9], 0);
+            file_writer_vector(time_keeper, ho2_vals, filenames[10], 0);
+            file_writer_vector(time_keeper, h2o2_vals, filenames[11], 0);
+            file_writer_vector(time_keeper, ar_vals, filenames[12], 0);
+            file_writer_vector(time_keeper, n2_vals, filenames[13], 0);
         }
     }
 
@@ -194,7 +217,19 @@ int main() {
     int precision = config.integerValues["float_precision"];
 
     try{
-        FluidSolver1DFunc<64>(config);
+        if (precision == 32){
+            std::cout << "Selected precision 32" << std::endl;
+            FluidSolver1DFunc<32>(config);
+        } else if (precision == 64){
+            std::cout << "Selected precision 64" << std::endl;
+            FluidSolver1DFunc<64>(config);
+        } else if (precision == 128){
+            std::cout << "Selected precision 128" << std::endl;
+            FluidSolver1DFunc<128>(config);
+        } else {
+            // raise error
+             
+        }
     } catch (CanteraError& err) {
         std::cout << err.what() << std::endl;
         return 1;

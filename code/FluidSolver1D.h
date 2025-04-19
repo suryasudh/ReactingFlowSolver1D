@@ -69,6 +69,7 @@ class FluidSolver1D {
             dt = dt_passed;
 
             T0 = T0_passed;
+        
             P0 = P0_passed;
             X0 = X0_passed;
             
@@ -94,32 +95,109 @@ class FluidSolver1D {
     
         std::tuple<std::vector<T>, std::vector<T>, std::vector<T>, 
                 std::vector<std::vector<T>>> get_initial_vals(int case_num) {
-            const std::string X0_c = X0;
-            gas->thermo()->setState_TPX(T0, P0, X0_c);
-        
-            T initial_density = static_cast<T>(gas->thermo()->density());
-            T initial_int_energy = static_cast<T>(gas->thermo()->intEnergy_mass());
 
-            double* ys_double_c = new double[n_species];
-            gas->thermo()->getMoleFractions(ys_double_c);
-            std::vector<T> initial_ys = vector_typecast<T>(ys_double_c, n_species);
-
-            std::vector<T> sv03_U(Nx, initial_int_energy);
-            std::vector<T> sv00_u = initial_cond_on_u_case1(x, L);
-
-            std::vector<T> q00_rho(Nx, initial_density);
-            std::vector<T> q01_rho_u = multiply_vectors(q00_rho, sv00_u);
-            
-            std::vector<T> q02_rho_e0 = multiply_vectors(q00_rho, add_vectors(sv03_U,
-                divide_vector_scalar(vector_float_power(sv00_u, static_cast<T>(2)), static_cast<T>(2))));
-
-            
+            std::vector<T> q00_rho(Nx);
+            std::vector<T> q01_rho_u(Nx);
+            std::vector<T> q02_rho_e0(Nx);
             std::vector<std::vector<T>> q03_rho_ys(Nx, std::vector<T>(n_species));
-            for (int i=0; i<Nx; i++){
-                for (int j=0; j<n_species; j++){
-                    q03_rho_ys[i][j] = initial_ys.at(j) * q00_rho.at(i);
+            std::vector<T> sv00_u(Nx);
+            std::vector<T> sv03_U(Nx);
+
+            if (case_num == 1){
+                const std::string X0_c = X0;
+
+                std::cout << "before setting temp: temp is: " << T0 << " K" << std::endl;
+                gas->thermo()->setState_TPX(T0, P0, X0_c);
+                std::cout << "after setting temp: temp is: " << gas->thermo()->temperature() << " K" << std::endl;
+            
+                T initial_density = static_cast<T>(gas->thermo()->density());
+                T initial_int_energy = static_cast<T>(gas->thermo()->intEnergy_mass());
+
+                double* ys_double_c = new double[n_species];
+                gas->thermo()->getMoleFractions(ys_double_c);
+                std::vector<T> initial_ys = vector_typecast<T>(ys_double_c, n_species);
+
+                sv03_U = create_initial_valued_vector(x, initial_int_energy);
+                sv00_u = initial_cond_on_u_case1(x, L);
+
+                // std::vector<T> q00_rho(Nx, initial_density);
+                q00_rho = create_initial_valued_vector(x, initial_density);
+                q01_rho_u = multiply_vectors(q00_rho, sv00_u);
+                
+                q02_rho_e0 = multiply_vectors(q00_rho, add_vectors(sv03_U,
+                    divide_vector_scalar(vector_float_power(sv00_u, static_cast<T>(2.0)), static_cast<T>(2.0))));
+
+                for (int i=0; i<Nx; i++){
+                    for (int j=0; j<n_species; j++){
+                        q03_rho_ys[i][j] = initial_ys.at(j) * q00_rho.at(i);
+                    }
+                } 
+
+            } else if (case_num == 2){
+                sv00_u = create_initial_valued_vector(q00_rho, static_cast<T>(0.0));
+                std::vector<T> temp_init = initial_cond_on_temp_case2(x, L);
+                
+                // same chemical composition
+                // temperature with gaussian peak
+                // 0 initial velocity
+                // uniform initial pressure
+                for (int i=0; i<Nx; i++){
+                    const std::string X0_c = X0;
+                    gas->thermo()->setState_TPX(temp_init[i], P0, X0_c);
+                
+                    T initial_density = static_cast<T>(gas->thermo()->density());
+                    T initial_int_energy = static_cast<T>(gas->thermo()->intEnergy_mass());
+
+                    double* ys_double_c = new double[n_species];
+                    gas->thermo()->getMoleFractions(ys_double_c);
+                    std::vector<T> initial_ys = vector_typecast<T>(ys_double_c, n_species);
+
+                    sv03_U[i] = initial_int_energy;
+                    
+
+                    // std::vector<T> q00_rho(Nx, initial_density);
+                    q00_rho[i] =  initial_density;
+                    q01_rho_u[i] = q00_rho[i] * sv00_u[i];
+
+                    q02_rho_e0[i] = q00_rho[i] * (sv03_U[i] + ((sv00_u[i] * sv00_u[i])/static_cast<T>(2.0)));
+                    
+                    for (int j=0; j<n_species; j++){
+                        q03_rho_ys[i][j] = initial_ys.at(j) * q00_rho.at(i);
+                    }
+                    
                 }
-            }
+            } else if (case_num == 3){
+
+                const std::string X0_c = X0;
+                // std::cout << "before setting temp: temp is: " << T0 << " K" << std::endl;
+                gas->thermo()->setState_TPX(T0, P0, X0_c);
+                // std::cout << "after setting temp: temp is: " << gas->thermo()->temperature() << " K" << std::endl;
+            
+                T initial_density = static_cast<T>(gas->thermo()->density());
+                T initial_int_energy = static_cast<T>(gas->thermo()->intEnergy_mass());
+
+                double* ys_double_c = new double[n_species];
+                gas->thermo()->getMoleFractions(ys_double_c);
+                std::vector<T> initial_ys = vector_typecast<T>(ys_double_c, n_species);
+
+                sv03_U = create_initial_valued_vector(q00_rho, initial_int_energy);
+                sv00_u = create_initial_valued_vector(q00_rho, static_cast<T>(0.0));
+
+                // std::vector<T> q00_rho(Nx, initial_density);
+                q00_rho = create_initial_valued_vector(q00_rho, initial_density);
+                q01_rho_u = multiply_vectors(q00_rho, sv00_u);
+                
+                q02_rho_e0 = multiply_vectors(q00_rho, add_vectors(sv03_U,
+                    divide_vector_scalar(vector_float_power(sv00_u, static_cast<T>(2)), static_cast<T>(2))));
+
+                for (int i=0; i<Nx; i++){
+                    for (int j=0; j<n_species; j++){
+                        q03_rho_ys[i][j] = initial_ys.at(j) * q00_rho.at(i);
+                    }
+                }
+
+            } 
+            
 
             rho_old_history.push_back(q00_rho);
             rho_u_old_history.push_back(q01_rho_u);
@@ -136,6 +214,8 @@ class FluidSolver1D {
                 const std::vector<T>& q01_rho_u, const std::vector<T>& q02_rho_e0, const std::vector<std::vector<T>>& q03_rho_ys) {
             current_iteration += 1;
 
+            // std::cout << "entering solver_func setting temp: temp is: " << gas->thermo()->temperature() << " K" << std::endl;
+
             std::vector<T> rho_old = q00_rho;
             std::vector<T> rho_u_old = q01_rho_u;
             std::vector<T> rho_e0_old = q02_rho_e0;
@@ -151,6 +231,7 @@ class FluidSolver1D {
             history_last_five_steps = std::make_tuple(rho_old_history, rho_u_old_history, rho_e0_old_history, rho_ys_old_history);
             std::tie(rho_new, rho_u_new, rho_e0_new, rho_ys_new, temperature_old, pressure_old) = time_stepper(dt, dx, rho_old, rho_u_old, rho_e0_old, rho_ys_old, gas, scheme_str, current_iteration, history_last_five_steps);
 
+            // std::cout << "after coming back from time_stepper in solver_func setting temp: temp is: " << gas->thermo()->temperature() << " K" << std::endl;
             
             if (current_iteration < 5){
                 rho_old_history.push_back(rho_new);
