@@ -174,6 +174,7 @@ void FluidSolver1DFunc(JsonData config) {
 
         // print_vector(u_values);
         // print_vector(temperature_old);
+        // std::cout << "Iteration: " << i << " running." << std::endl;
 
         time_checkpoints_end.push_back(std::chrono::steady_clock::now());
 

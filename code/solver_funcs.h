@@ -474,17 +474,17 @@ std::tuple<std::vector<T>, std::vector<T>, std::vector<T>,
 
     // Taking a step now from starting position using the slopes at the half step
     _rho_new = add_vectors(rho_old, add_vectors(add_vectors(multiply_vector_scalar(rho_k1, dt_val/static_cast<T>(6.0)),
-                                                                        multiply_vector_scalar(rho_k2, dt_val/static_cast<T>(1.5))),
+                                                                        multiply_vector_scalar(rho_k2, dt_val*(static_cast<T>(4.0)/static_cast<T>(6.0)))),
                                                                         multiply_vector_scalar(rho_k3, dt_val/static_cast<T>(6.0))));
     _rho_u_new = add_vectors(rho_u_old, add_vectors(add_vectors(multiply_vector_scalar(rho_u_k1, dt_val/static_cast<T>(6.0)),
-                                                                        multiply_vector_scalar(rho_u_k2, dt_val/static_cast<T>(3.0))),
-                                                                        multiply_vector_scalar(rho_u_k3, dt_val/static_cast<T>(3.0))));
+                                                                        multiply_vector_scalar(rho_u_k2, dt_val*(static_cast<T>(4.0)/static_cast<T>(6.0)))),
+                                                                        multiply_vector_scalar(rho_u_k3, dt_val/static_cast<T>(6.0))));
     _rho_e0_new = add_vectors(rho_e0_old, add_vectors(add_vectors(multiply_vector_scalar(rho_e0_k1, dt_val/static_cast<T>(6.0)),
-                                                                        multiply_vector_scalar(rho_e0_k2, dt_val/static_cast<T>(3.0))),
-                                                                        multiply_vector_scalar(rho_e0_k3, dt_val/static_cast<T>(3.0))));
+                                                                        multiply_vector_scalar(rho_e0_k2, dt_val*(static_cast<T>(4.0)/static_cast<T>(6.0)))),
+                                                                        multiply_vector_scalar(rho_e0_k3, dt_val/static_cast<T>(6.0))));
     _rho_ys_new = add_vectors(rho_ys_old, add_vectors(add_vectors(multiply_vector_2nd_order_scalar(rho_ys_k1, dt_val/static_cast<T>(6.0)),
-                                                                        multiply_vector_2nd_order_scalar(rho_ys_k2, dt_val/static_cast<T>(3.0))),
-                                                                        multiply_vector_2nd_order_scalar(rho_ys_k3, dt_val/static_cast<T>(3.0))));
+                                                                        multiply_vector_2nd_order_scalar(rho_ys_k2, dt_val*(static_cast<T>(4.0)/static_cast<T>(6.0)))),
+                                                                        multiply_vector_2nd_order_scalar(rho_ys_k3, dt_val/static_cast<T>(6.0))));
 
     _rho_new = vector_value_minimum_limiter(_rho_new, static_cast<T>(1e-8));
     _rho_ys_new = vector_value_minimum_limiter(_rho_ys_new, static_cast<T>(0.0));

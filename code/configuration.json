@@ -1,8 +1,8 @@
 {
     "data_folder01": "../data/cantera_files/",
     "outputs_folder01": "/media/ssudhakar/DATA_10TB/data_solver/",
-    "run_num": "622GT",
-    "float_precision": 64,
+    "run_num": "323GT",
+    "float_precision": 128,
     "boundary_mode" : 1,
     "left_boundary_dirichlet" : 0.0,
     "right_boundary_dirichlet" : 0.0,
@@ -15,6 +15,6 @@
     "timestep" : 0.000000001,
     "n_iters_total" : 1000000,
     "n_iters_save" : 100,
-    "scheme_to_use" : "AB2RK2",
+    "scheme_to_use" : "RK3",
     "case_problem" : 2
 }
