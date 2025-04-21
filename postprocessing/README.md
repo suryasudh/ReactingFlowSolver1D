@@ -4,4 +4,24 @@ Specifically, it might contain files like <br>
 the python scripts to create plots of analysis <br>
 which are saved to an outputs folder.
 
+plotting0005_heap.ipynb <br>
+This file contains analysis of logfiles and plotting the heap usage. <br>
+It handles the logs of all the 3 cases.
+
+plotting0006_gtcase.ipynb <br>
+It contains plotting the solutions and errors of the case with <br>
+Gaussian distribution based initial temperature. 
+
+plotting0006_hi1200.ipynb <br>
+It contains plotting the solutions and errors of the case with <br>
+Homogeneous AutoIgnition with initial temperature as 1200K.
+
+plotting0006_hi1350.ipynb <br>
+It contains plotting the solutions and errors of the case with <br>
+Homogeneous AutoIgnition with initial temperature as 1350K. 
+
+plotting0006_stdwave.ipynb <br>
+It contains plotting the solutions and errors of the case with <br>
+non-reacting Standing Wave.
+
 

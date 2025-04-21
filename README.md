@@ -1,6 +1,10 @@
 # dummyTheMummy
 dummy The Mummy is a simple and innocent mummy who became dummy
 
+Contains 3 cases:
+1. Standing Wave (Non-Reacting) (enter case 1)
+2. Homogeneous Auto Ignition (Reacting - Uniform) (enter case 3)
+3. Gaussian Distribution based initial temperature condition (enter case 2)
 
 Change of plans
 ---------------
