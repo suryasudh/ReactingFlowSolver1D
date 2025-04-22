@@ -18,8 +18,8 @@ Contains 3 cases: <br>
 3. Gaussian Distribution based initial temperature condition (Reacting - Non Uniform) (enter case 2)
 
 <br>
-The input conditions need to be passed from `configuration.json` in the code folder. <br>
-From the same folder, use `make` commands (examples provided below)
+The input conditions need to be passed from <code>configuration.json</code> in the code folder. <br>
+From the same folder, use <code>make</code> commands (examples provided below)
 
 Change of plans
 ---------------
