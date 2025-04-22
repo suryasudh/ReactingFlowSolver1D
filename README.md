@@ -15,7 +15,7 @@ This package was tested on 3 different cases. <br>
 Contains 3 cases: <br>
 1. Standing Wave (Non-Reacting) (enter case 1)
 2. Homogeneous Auto Ignition (Reacting - Uniform) (enter case 3)
-3. Gaussian Distribution based initial temperature condition (enter case 2)
+3. Gaussian Distribution based initial temperature condition (Reacting - Non Uniform) (enter case 2)
 
 <br>
 The input conditions need to be passed from `configuration.json` in the code folder. <br>
