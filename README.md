@@ -7,6 +7,9 @@ Author: Surya Datta Sudhakar <br>
 SR No: 24309 <br>
 Dept: Computational and Data Sciences <br><br>
 
+The github page of this package <br>
+<a href=https://github.com/suryasudh/ReactingFlowSolver1D>Github page of this package! Click on this line!</href> <br><br>
+
 The following code package needs <br>
 cantera c++ library. <br>
 <a href=https://cantera.org/stable/install/index.html#installing-the-cantera-c-interface-fortran-90-module>Cantera Installation</href> <br> <br>
@@ -19,10 +22,14 @@ Contains 3 cases: <br>
 
 <br>
 The input conditions need to be passed from <code>configuration.json</code> in the code folder. <br>
-From the same folder, use <code>make</code> commands (examples provided below)
+From the same folder, use <code>make</code> commands (examples provided below) <br><br>
 
-Change of plans
----------------
+<br>
+Will keep updating the package, <br>
+Implementing more features.
+
+Supported Operating Systems
+---------------------------
 Now running only on Ubuntu (linux based systems) <br>
 Mainly because of the limitation of c++ cantera library <br>
 which is more suited for linux environments.
